@@ -1,19 +1,101 @@
-import React, {FC} from 'react';
-import {View, StyleSheet, TextInput, SafeAreaView, Text} from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  SafeAreaView,
+  Text,
+  Button,
+} from 'react-native';
 import colors from '../../utils/colors';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import AppInput from '../../ui/AppInput';
 import AuthInputField from '../../components/AuthInputField';
+import {Formik} from 'formik';
+import * as yup from 'yup';
 
 interface Props {}
+
+//There is a formik prop for error validatea schema we will pass it there
+const signUpValidation = yup.object({
+  name: yup
+    .string()
+    .trim('Name is Missing!')
+    .min(3, 'Invalid name')
+    .required('Name is Required!'),
+  email: yup
+    .string()
+    .trim('Email is Missing!')
+    .email('Invalid Email address!')
+    .required('Email is Required!'),
+  password: yup
+    .string()
+    .trim('Password is Missing!')
+    .min(8, 'Password must be 8 characters long!')
+    .matches(
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+      'Password must contain at least one uppercase letter, one number, and one special character.',
+    )
+    .required('Password is Required!'),
+});
+
+const initialValues = {
+  name: '',
+  email: '',
+  password: '',
+};
 const SignUp: FC<Props> = props => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.formContainer}>
-        <AuthInputField label='Name' placeholder='John Doe'/>
-        <AuthInputField label='Email' placeholder='nayeem@hotmail.com' keyboardType='email-address' />
-        <AuthInputField label='Password'   placeholder="**********" secureTextEntry/>
-      </View>
+      {/*  Formik is initialized with default field values using `initialValues`
+      and a Yup-based schema `signUpValidation` to handle form validation rules. */}
+      <Formik
+        initialValues={initialValues}
+        // This function is called when the form is submitted
+        onSubmit={values => {
+          console.log(values);
+        }}
+        // Validation schema for all fields
+        validationSchema={signUpValidation}> 
+
+        {/* Formik provides helper functions and states to manage form behavior.
+        These include `handleSubmit` (for form submission),
+        `handleChange` (to update field values),
+        `values` (the current state of all inputs),
+        and `errors` (validation error messages from Yup).
+        */}
+        {({handleSubmit, handleChange, values, errors}) => {
+          return (
+            <View style={styles.formContainer}>
+              <AuthInputField
+                label="Name"
+                placeholder="John Doe"
+                // When the Name input changes, Formik updates `values.name`
+                onChange={handleChange('name')} 
+                // If Yup validation fails for name, the error message is shown
+                errorMsg={errors.name}
+                 // Current value of the name field, kept in sync by Formik
+                values={values.name}
+              />
+              <AuthInputField
+                label="Email"
+                placeholder="nayeem@hotmail.com"
+                keyboardType="email-address"
+                onChange={handleChange('email')}
+                errorMsg={errors.email}
+                values={values.email}
+              />
+              <AuthInputField
+                label="Password"
+                placeholder="**********"
+                secureTextEntry
+                onChange={handleChange('password')}
+                errorMsg={errors.password}
+                values={values.password}
+              />
+              <Button title={'Sign Up'} onPress={() => handleSubmit()} />
+            </View>
+          );
+        }}
+      </Formik>
     </SafeAreaView>
   );
 };
@@ -35,12 +117,12 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.CONTRAST,
-    marginVertical: 10
+    marginVertical: 10,
   },
   formContainer: {
-    width: "100%",
-    paddingHorizontal: 15
-  }
+    width: '100%',
+    paddingHorizontal: 15,
+  },
 });
 
 export default SignUp;
