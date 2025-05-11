@@ -37,8 +37,8 @@ const LostPassword: FC<Props> = props => {
         }}
         validationSchema={passwordValidation}>
         <AuthFormContainer 
-            title={'Lost your Password!'} 
             subTitle={`No stress — just set a new one.`}
+            title={'Lost your Password!'} 
         >
           <View style={styles.formContainer}>
           <AuthInputField

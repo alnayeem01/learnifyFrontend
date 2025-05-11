@@ -5,7 +5,7 @@ import { ReactNode } from 'react'
 
 interface Props<T> {
   initialValues: any;
-  validationSchema: any;
+  validationSchema?: any;
   onSubmit(values: T, formikHelpers: FormikHelpers<T>): void;
   children: ReactNode
 }
