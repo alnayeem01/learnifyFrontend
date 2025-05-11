@@ -1,5 +1,5 @@
-import { FC, useEffect } from 'react'
-import { View, StyleSheet, Text, TextInputProps, StyleProp, ViewStyle } from 'react-native'
+import { FC, ReactNode, useEffect } from 'react'
+import { View, StyleSheet, Text, TextInputProps, StyleProp, ViewStyle, Pressable } from 'react-native'
 import AppInput from '../../ui/AppInput';
 import colors from '../../utils/colors';
 import { useFormikContext } from 'formik';
@@ -14,8 +14,10 @@ interface Props {
     containerStyle?: StyleProp<ViewStyle>
     onChange?: (text: string) => void
     secureTextEntry?: TextInputProps["secureTextEntry"], 
+    rightIcon?: ReactNode,
+    onRightIconPress?:()=> void
 }
-const AuthInputField: FC<Props> = ({ label, placeholder, keyboardType, containerStyle, secureTextEntry, onChange, name, }) => {
+const AuthInputField: FC<Props> = ({ label, placeholder, keyboardType, containerStyle, secureTextEntry, name, rightIcon,onRightIconPress }) => {
 
     const inputStyleValue = useSharedValue(0); // state from reanimated
     //FormikContext
@@ -54,7 +56,8 @@ const AuthInputField: FC<Props> = ({ label, placeholder, keyboardType, container
                 <Text style={styles.label}>{label}</Text>
                 <Text style={styles.errorMsg}>{errorMsg}</Text>
             </View>
-            <AppInput
+            <View>
+                <AppInput
                 placeholder={placeholder}
                 keyboardType={keyboardType} //To pass prop form child we are exteidng the interfce type for This components
                 secureTextEntry={secureTextEntry}
@@ -63,6 +66,14 @@ const AuthInputField: FC<Props> = ({ label, placeholder, keyboardType, container
                 onBlur={handleBlur(name)}
                 style={styles.marginBottom}
             />
+            {
+                rightIcon?(
+                    <Pressable onPress={onRightIconPress} style= {styles.rightIcon}>
+                        {rightIcon}
+                    </Pressable>
+                ): null
+            }
+            </View>
         </Animated.View>
     )
 };
@@ -84,6 +95,15 @@ const styles = StyleSheet.create({
     marginBottom:{
         marginBottom:10
     },
+    rightIcon:{
+        width: 45,
+        height: 45,
+        position: "absolute",
+        top: 0,
+        right: 0,
+        justifyContent: "center",
+        alignItems: "center"
+    }
 });
 
 export default AuthInputField;

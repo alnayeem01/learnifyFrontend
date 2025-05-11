@@ -1,15 +1,21 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   View,
   StyleSheet,
   SafeAreaView,
   Button,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import colors from '../../utils/colors';
 import AuthInputField from '../../components/form/AuthInputField';
 import * as yup from 'yup';
 import Form from '../../components/form/index';
 import SubmitBtn from '../../components/form/SubmitBtn';
+import Icon from 'react-native-vector-icons/AntDesign'
+import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
+import AppLink from '../../ui/AppLink';
+import CircleUI from '../../ui/CircleUI';
 
 interface Props { }
 
@@ -43,8 +49,19 @@ const initialValues = {
 };
 
 const SignUp: FC<Props> = props => {
+
+  const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+
+  const togglePassword = () => {
+    setSecureTextEntry(!secureTextEntry)
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <CircleUI size={200} position={'top-left'} />
+      <CircleUI size={100} position={'top-right'} />
+      <CircleUI size={100} position={'bottom-left'} />
+      <CircleUI size={200 / 2} position={'bottom-right'} />
       {/*  Formik is initialized with default field values using `initialValues`
       and a Yup-based schema `signUpValidation` to handle form validation rules. */}
       <Form
@@ -69,17 +86,28 @@ const SignUp: FC<Props> = props => {
             name="password"
             label="Password"
             placeholder="**********"
-            secureTextEntry
+            secureTextEntry={secureTextEntry}
+            rightIcon={<PasswordVisibilityIcon privateIcon={secureTextEntry} />}
+            onRightIconPress={() =>
+              togglePassword()
+            }
           />
           <SubmitBtn title={'Sign Up'} />
+
+          <View style={styles.linkContainer}>
+            <AppLink title='I Lost my Password!' />
+            <AppLink title='Sign in ' />
+          </View>
         </View>
       </Form>
+
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,  // fix-up froom stackOverflow
     flex: 1,
     gap: 10,
     alignItems: 'center',
@@ -101,6 +129,13 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 15,
   },
+  linkContainer: {
+    flexDirection: "row",
+    gap: 5,
+    justifyContent: "space-between",
+    marginTop: 30,
+    alignItems: "center"
+  }
 });
 
 export default SignUp;
