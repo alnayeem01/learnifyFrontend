@@ -1,20 +1,19 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC } from 'react';
 import {
   View,
   StyleSheet,
-  TextInput,
   SafeAreaView,
-  Text,
   Button,
 } from 'react-native';
 import colors from '../../utils/colors';
-import AuthInputField from '../../components/AuthInputField';
-import {Formik} from 'formik';
+import AuthInputField from '../../components/form/AuthInputField';
 import * as yup from 'yup';
+import Form from '../../components/form/index';
+import SubmitBtn from '../../components/form/SubmitBtn';
 
-interface Props {}
+interface Props { }
 
-//There is a formik prop for error validatea schema we will pass it there
+//There is a formik prop for error validatea schema we will pass it therenp
 const signUpValidation = yup.object({
   name: yup
     .string()
@@ -42,60 +41,39 @@ const initialValues = {
   email: '',
   password: '',
 };
+
 const SignUp: FC<Props> = props => {
   return (
     <SafeAreaView style={styles.container}>
       {/*  Formik is initialized with default field values using `initialValues`
       and a Yup-based schema `signUpValidation` to handle form validation rules. */}
-      <Formik
+      <Form
         initialValues={initialValues}
-        // This function is called when the form is submitted
         onSubmit={values => {
           console.log(values);
         }}
-        // Validation schema for all fields
-        validationSchema={signUpValidation}> 
-
-        {/* Formik provides helper functions and states to manage form behavior.
-        These include `handleSubmit` (for form submission),
-        `handleChange` (to update field values),
-        `values` (the current state of all inputs),
-        and `errors` (validation error messages from Yup).
-        */}
-        {({handleSubmit, handleChange, values, errors}) => {
-          return (
-            <View style={styles.formContainer}>
-              <AuthInputField
-                label="Name"
-                placeholder="John Doe"
-                // When the Name input changes, Formik updates `values.name`
-                onChange={handleChange('name')} 
-                // If Yup validation fails for name, the error message is shown
-                errorMsg={errors.name}
-                 // Current value of the name field, kept in sync by Formik
-                values={values.name}
-              />
-              <AuthInputField
-                label="Email"
-                placeholder="nayeem@hotmail.com"
-                keyboardType="email-address"
-                onChange={handleChange('email')}
-                errorMsg={errors.email}
-                values={values.email}
-              />
-              <AuthInputField
-                label="Password"
-                placeholder="**********"
-                secureTextEntry
-                onChange={handleChange('password')}
-                errorMsg={errors.password}
-                values={values.password}
-              />
-              <Button title={'Sign Up'} onPress={() => handleSubmit()} />
-            </View>
-          );
-        }}
-      </Formik>
+        validationSchema={signUpValidation}>
+        <View style={styles.formContainer}>
+          <AuthInputField
+            name="name"
+            label="Name"
+            placeholder="John Doe"
+          />
+          <AuthInputField
+            name="email"
+            label="Email"
+            placeholder="nayeem@hotmail.com"
+            keyboardType="email-address"
+          />
+          <AuthInputField
+            name="password"
+            label="Password"
+            placeholder="**********"
+            secureTextEntry
+          />
+          <SubmitBtn title={'Sign Up'} />
+        </View>
+      </Form>
     </SafeAreaView>
   );
 };
