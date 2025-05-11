@@ -2,33 +2,22 @@ import React, { FC, useState } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
-  Button,
   Platform,
   StatusBar,
-  Image,
-  Text,
 } from 'react-native';
 import colors from '../../utils/colors';
 import AuthInputField from '../../components/form/AuthInputField';
 import * as yup from 'yup';
 import Form from '../../components/form/index';
 import SubmitBtn from '../../components/form/SubmitBtn';
-import Icon from 'react-native-vector-icons/AntDesign'
 import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
 import AppLink from '../../ui/AppLink';
-import CircleUI from '../../ui/CircleUI';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
 
 interface Props { }
 
 //There is a formik prop for error validatea schema we will pass it therenp
-const signUpValidation = yup.object({
-  name: yup
-    .string()
-    .trim('Name is Missing!')
-    .min(3, 'Invalid name')
-    .required('Name is Required!'),
+const signInValidation = yup.object({
   email: yup
     .string()
     .trim('Email is Missing!')
@@ -38,20 +27,15 @@ const signUpValidation = yup.object({
     .string()
     .trim('Password is Missing!')
     .min(8, 'Password must be 8 characters long!')
-    .matches(
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
-      'Password must contain at least one uppercase letter, one number, and one special character.',
-    )
     .required('Password is Required!'),
 });
 
 const initialValues = {
-  name: '',
   email: '',
   password: '',
 };
 
-const SignUp: FC<Props> = props => {
+const SignIn: FC<Props> = props => {
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
 
@@ -65,14 +49,9 @@ const SignUp: FC<Props> = props => {
         onSubmit={values => {
           console.log(values);
         }}
-        validationSchema={signUpValidation}>
-        <AuthFormContainer title={'Welcome'} subTitle={`Let's get started by creating your account!`} >
+        validationSchema={signInValidation}>
+        <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
           <View style={styles.formContainer}>
-          <AuthInputField
-            name="name"
-            label="Name"
-            placeholder="John Doe"
-          />
           <AuthInputField
             name="email"
             label="Email"
@@ -89,11 +68,11 @@ const SignUp: FC<Props> = props => {
               togglePassword()
             }
           />
-          <SubmitBtn title={'Sign Up'} />
+          <SubmitBtn title={'Sign in'} />
 
           <View style={styles.linkContainer}>
             <AppLink title='I Lost my Password!' />
-            <AppLink title='Sign in ' />
+            <AppLink title='Sign Up  ' />
           </View>
           </View>
         </AuthFormContainer>
@@ -148,4 +127,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignUp;
+export default SignIn;
