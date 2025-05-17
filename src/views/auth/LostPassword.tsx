@@ -14,6 +14,8 @@ import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import client from '../../api/client';
 
 interface Props { }
 
@@ -30,23 +32,34 @@ const initialValues = {
   email: '',
 };
 
+//hanldePassword 
+const handlePasswordResetLink = async (values: { email: string }, actions: FormikHelpers<{ email: string }>) => {
+  actions.setSubmitting(true)
+  console.log(values.email)
+  try {
+    const {data} = await client.post('/auth/forget-password', {email: values.email})
+
+  } catch (e) {
+    console.log(e)
+  }
+    actions.setSubmitting(false)
+}
+
 const LostPassword: FC<Props> = props => {
 
   //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
-  const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
 
   return (
-      <Form
-        initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
-        validationSchema={passwordValidation}>
-        <AuthFormContainer 
-            subTitle={`No stress — just set a new one.`}
-            title={'Lost your Password!'} 
-        >
-          <View style={styles.formContainer}>
+    <Form
+      initialValues={initialValues}
+      onSubmit={handlePasswordResetLink}
+      validationSchema={passwordValidation}>
+      <AuthFormContainer
+        subTitle={`No stress — just set a new one.`}
+        title={'Lost your Password!'}
+      >
+        <View style={styles.formContainer}>
           <AuthInputField
             name="email"
             label="Email"
@@ -57,15 +70,15 @@ const LostPassword: FC<Props> = props => {
 
           <View style={styles.linkContainer}>
             <AppLink title='Sign Up' onPress={() => {
-              navigatation.navigate("SignUp")
+              navigation.navigate("SignUp")
             }} />
             <AppLink title='Go Back' onPress={() => {
-              navigatation.navigate("SignIn")
+              navigation.navigate("SignIn")
             }} />
           </View>
-          </View>
-        </AuthFormContainer>
-      </Form>
+        </View>
+      </AuthFormContainer>
+    </Form>
 
   );
 };
@@ -101,16 +114,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: "center"
   },
-  headingContainer:{
+  headingContainer: {
     alignItems: "center",
     gap: 10
   },
-  headinText:{
+  headinText: {
     fontSize: 26,
     fontWeight: "bold",
     color: colors.SECONDARY,
   },
-  headinTextTitle:{
+  headinTextTitle: {
     fontSize: 14,
     color: colors.CONTRAST,
   }

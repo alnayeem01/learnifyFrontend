@@ -44,6 +44,7 @@ const initialValues = {
 };
 
 const handleSubmit = async ( values: User, actions: FormikHelpers<User>) => {
+  actions.setSubmitting(true)
         try{
           const res = await client.post('/auth/sign-in',{
             ...values
@@ -52,6 +53,7 @@ const handleSubmit = async ( values: User, actions: FormikHelpers<User>) => {
         }catch(e){
           console.log(e)
         }
+        actions.setSubmitting(false)
       }
 
 const SignIn: FC<Props> = props => {

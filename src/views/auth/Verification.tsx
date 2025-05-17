@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput, Text } from 'react-native';
 import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
 import OtpField from '../../ui/otpField';
@@ -8,6 +8,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../@types/navigation';
 import client from '../../api/client';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { FormikHelpers } from 'formik';
+import Loader from '../../ui/Loader';
+import colors from '../../utils/colors';
 
 type Props = NativeStackScreenProps<AuthStackParamList,  "Verification">
 
@@ -21,11 +24,13 @@ const Verification: FC<Props> = (props) => {
   const prevOtp = useRef([...otp]);
 
   const {userInfo} = (props.route.params)
+  const [busy, setbusy] = useState(false)
+  const [countDown, setCountDown] = useState(60)
+    const [canSendNewOtpReq, setCanSendNewOtpReq] = useState(false)
 
   const handleSubmit = async ()=>{
-    console.log(('Cliked'))
-    console.log( otp.join(""))
-    console.log( userInfo.id)
+   
+    setbusy(true)
     try{
       const {data} = await client.post('/auth/verify-email', {
       token : otp.join(""),
@@ -36,6 +41,7 @@ const Verification: FC<Props> = (props) => {
     }catch(e){
       console.log(e)
     }
+    setbusy(false)
    
   }
 
@@ -59,11 +65,38 @@ const Verification: FC<Props> = (props) => {
 
     prevOtp.current = newOtp;
   };
+  //re-send OTP 
+  const handleOtp =async ()=>{
+    setCountDown(60)
+    setCanSendNewOtpReq(false)
+    try{
+      await client.post('/auth/re-verify-email', {
+      userId: userInfo.id
+    })
+    }catch(e){
+      console.log(e)
+    }
+  }
 
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
+
+   useEffect(() => {
+    const intervalId = setInterval(()=>{
+      setCountDown((oldCountDown)=>{
+        if(oldCountDown <=0){
+          setCanSendNewOtpReq(true)
+          return 0
+        }
+        return oldCountDown - 1
+      } )
+    }, 1000);
+    return ()=>{
+      clearInterval(intervalId)
+    }
+}, [canSendNewOtpReq]);
 
   return (
     <AuthFormContainer
@@ -88,10 +121,11 @@ const Verification: FC<Props> = (props) => {
           ))}
         </View>
 
-        <AppButton title="Submit" onPress={handleSubmit}/>
+        <AppButton title={!busy? "Submit": <Loader />} onPress={handleSubmit}/>
 
         <View style={styles.linkContainer}>
-          <AppLink title="Resend OTP"  />
+          <Text style={styles.countDown}>{countDown} Sec</Text>
+          <AppLink active={canSendNewOtpReq} title="Resend OTP" onPress={handleOtp} />
           <AppLink title="Go Back" onPress={() => {
               navigation.navigate("SignUp");
             }} />
@@ -117,6 +151,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
   },
+  countDown:{
+    color: colors.SECONDARY,
+    marginRight: 7
+  }
 });
 
 export default Verification;

@@ -76,7 +76,7 @@ const SignUp: FC<Props> = props => {
 
     const handleSubmit = async (values: newUser, actions : FormikHelpers<newUser> ) => {
          // send user data to server
-         console.log('cliekd')
+        actions.setSubmitting(true)
          try{
           // fix up from stackOverflow as loaclhost endpoint won't work here 
           const {data} =  await client.post('/auth/create', {
@@ -90,6 +90,7 @@ const SignUp: FC<Props> = props => {
          }catch(error){
           console.log("Sing up error" , error)
          }
+           actions.setSubmitting(false)
         }
 
   return (
