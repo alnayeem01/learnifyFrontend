@@ -19,6 +19,11 @@ import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
 import AppLink from '../../ui/AppLink';
 import CircleUI from '../../ui/CircleUI';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import axios from 'axios';
+import client from '../../api/client';
 
 interface Props { }
 
@@ -45,6 +50,13 @@ const signUpValidation = yup.object({
     .required('Password is Required!'),
 });
 
+interface newUser {
+  name: string;
+  email: string;
+  password: string;
+};
+
+
 const initialValues = {
   name: '',
   email: '',
@@ -53,18 +65,37 @@ const initialValues = {
 
 const SignUp: FC<Props> = props => {
 
+  //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
 
   const togglePassword = () => {
     setSecureTextEntry(!secureTextEntry)
   };
 
+    const handleSubmit = async (values: newUser, actions : FormikHelpers<newUser> ) => {
+         // send user data to server
+         console.log('cliekd')
+         try{
+          // fix up from stackOverflow as loaclhost endpoint won't work here 
+          const {data} =  await client.post('/auth/create', {
+            ...values
+          });
+          console.log(data);
+
+          navigation.navigate("Verification", {
+            userInfo: data.User,
+          })
+         }catch(error){
+          console.log("Sing up error" , error)
+         }
+        }
+
   return (
       <Form
         initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
+        onSubmit={handleSubmit}
         validationSchema={signUpValidation}>
         <AuthFormContainer title={'Welcome'} subTitle={`Let's get started by creating your account!`} >
           <View style={styles.formContainer}>
@@ -92,8 +123,12 @@ const SignUp: FC<Props> = props => {
           <SubmitBtn title={'Sign Up'} />
 
           <View style={styles.linkContainer}>
-            <AppLink title='I Lost my Password!' />
-            <AppLink title='Sign in ' />
+            <AppLink title='I Lost my Password!' onPress={()=>{
+              navigation.navigate("SignUp")
+            }}/>
+            <AppLink title='Sign in' onPress={()=>{
+              navigation.navigate("SignIn")
+            }} />
           </View>
           </View>
         </AuthFormContainer>

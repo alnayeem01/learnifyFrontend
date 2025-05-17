@@ -13,6 +13,10 @@ import SubmitBtn from '../../components/form/SubmitBtn';
 import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
 import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import client from '../../api/client';
 
 interface Props { }
 
@@ -29,13 +33,31 @@ const signInValidation = yup.object({
     .min(8, 'Password must be 8 characters long!')
     .required('Password is Required!'),
 });
+interface User {
+  email: string,
+  password: string,
+};
 
 const initialValues = {
   email: '',
   password: '',
 };
 
+const handleSubmit = async ( values: User, actions: FormikHelpers<User>) => {
+        try{
+          const res = await client.post('/auth/sign-in',{
+            ...values
+          })
+          console.log(res?.data.profile)
+        }catch(e){
+          console.log(e)
+        }
+      }
+
 const SignIn: FC<Props> = props => {
+
+  //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
+  const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
 
@@ -44,14 +66,12 @@ const SignIn: FC<Props> = props => {
   };
 
   return (
-      <Form
-        initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
-        validationSchema={signInValidation}>
-        <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
-          <View style={styles.formContainer}>
+    <Form
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={signInValidation}>
+      <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
+        <View style={styles.formContainer}>
           <AuthInputField
             name="email"
             label="Email"
@@ -71,12 +91,16 @@ const SignIn: FC<Props> = props => {
           <SubmitBtn title={'Sign in'} />
 
           <View style={styles.linkContainer}>
-            <AppLink title='I Lost my Password!' />
-            <AppLink title='Sign Up  ' />
+            <AppLink title='I Lost my Password!' onPress={() => {
+              navigatation.navigate("LostPassword")
+            }} />
+            <AppLink title='Sign Up' onPress={() => {
+              navigatation.navigate("SignUp")
+            }} />
           </View>
-          </View>
-        </AuthFormContainer>
-      </Form>
+        </View>
+      </AuthFormContainer>
+    </Form>
 
   );
 };
@@ -112,16 +136,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: "center"
   },
-  headingContainer:{
+  headingContainer: {
     alignItems: "center",
     gap: 10
   },
-  headinText:{
+  headinText: {
     fontSize: 26,
     fontWeight: "bold",
     color: colors.SECONDARY,
   },
-  headinTextTitle:{
+  headinTextTitle: {
     fontSize: 14,
     color: colors.CONTRAST,
   }

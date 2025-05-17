@@ -12,6 +12,8 @@ import Form from '../../components/form/index';
 import SubmitBtn from '../../components/form/SubmitBtn';
 import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../@types/navigation';
 
 interface Props { }
 
@@ -29,6 +31,10 @@ const initialValues = {
 };
 
 const LostPassword: FC<Props> = props => {
+
+  //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
+  const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
+
   return (
       <Form
         initialValues={initialValues}
@@ -50,8 +56,12 @@ const LostPassword: FC<Props> = props => {
           <SubmitBtn title={'Send link'} />
 
           <View style={styles.linkContainer}>
-            <AppLink title='Sign Up' />
-            <AppLink title='Go Back' />
+            <AppLink title='Sign Up' onPress={() => {
+              navigatation.navigate("SignUp")
+            }} />
+            <AppLink title='Go Back' onPress={() => {
+              navigatation.navigate("SignIn")
+            }} />
           </View>
           </View>
         </AuthFormContainer>

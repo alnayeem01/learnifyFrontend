@@ -4,15 +4,40 @@ import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
 import OtpField from '../../ui/otpField';
 import AppButton from '../../components/ui/AppButton';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../../@types/navigation';
+import client from '../../api/client';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
-interface Props { }
+type Props = NativeStackScreenProps<AuthStackParamList,  "Verification">
 
 const otpLength = 6;
 
-const Verification: FC<Props> = () => {
+const Verification: FC<Props> = (props) => {
+
+   const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
   const [otp, setOtp] = useState(new Array(otpLength).fill(''));
   const inputRefs = useRef<TextInput[]>([]);
   const prevOtp = useRef([...otp]);
+
+  const {userInfo} = (props.route.params)
+
+  const handleSubmit = async ()=>{
+    console.log(('Cliked'))
+    console.log( otp.join(""))
+    console.log( userInfo.id)
+    try{
+      const {data} = await client.post('/auth/verify-email', {
+      token : otp.join(""),
+      userId : userInfo.id
+    })  
+      //navigate to sign in after success
+       navigation.navigate("SignIn")
+    }catch(e){
+      console.log(e)
+    }
+   
+  }
 
   const handleChangeText = (text: string, index: number) => {
     if (text.length > 1) return; // Prevent pasting multiple chars
@@ -63,11 +88,13 @@ const Verification: FC<Props> = () => {
           ))}
         </View>
 
-        <AppButton title="Send link" />
+        <AppButton title="Submit" onPress={handleSubmit}/>
 
         <View style={styles.linkContainer}>
-          <AppLink title="Resend OTP" />
-          <AppLink title="Go Back" />
+          <AppLink title="Resend OTP"  />
+          <AppLink title="Go Back" onPress={() => {
+              navigation.navigate("SignUp");
+            }} />
         </View>
       </View>
     </AuthFormContainer>
