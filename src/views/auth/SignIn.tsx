@@ -17,6 +17,9 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../@types/navigation';
 import { FormikHelpers } from 'formik';
 import client from '../../api/client';
+import { getAuthState, updateLoggedInState, updateProfile } from '../../store/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { keys, saveToAsyncStorage } from '../../utils/asyncStorage';
 
 interface Props { }
 
@@ -43,18 +46,7 @@ const initialValues = {
   password: '',
 };
 
-const handleSubmit = async ( values: User, actions: FormikHelpers<User>) => {
-  actions.setSubmitting(true)
-        try{
-          const res = await client.post('/auth/sign-in',{
-            ...values
-          })
-          console.log(res?.data.profile)
-        }catch(e){
-          console.log(e)
-        }
-        actions.setSubmitting(false)
-      }
+
 
 const SignIn: FC<Props> = props => {
 
@@ -62,10 +54,28 @@ const SignIn: FC<Props> = props => {
   const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+  const dispatch = useDispatch()
 
   const togglePassword = () => {
     setSecureTextEntry(!secureTextEntry)
   };
+  const handleSubmit = async (values: User, actions: FormikHelpers<User>) => {
+    actions.setSubmitting(true)
+    try {
+      const res = await client.post('/auth/sign-in', {
+        ...values
+      })
+
+      await saveToAsyncStorage(keys.Auth_TOKEN, res.data.token)
+      // This line updates the Redux store with the logged-in user's profile data
+      // It dispatches the `updateProfile` action with the user object from the API response
+      dispatch(updateProfile(res.data.profile));
+      dispatch(updateLoggedInState(true))
+    } catch (e) {
+      console.log(e)
+    }
+    actions.setSubmitting(false)
+  }
 
   return (
     <Form

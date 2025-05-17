@@ -8,5 +8,8 @@ const store = configureStore({
   reducer: authReducer,
 });
 
+// RootState represents the entire Redux state shape using the return type of store.getState
+export type RootState = ReturnType<typeof store.getState>
+
 
 export default store
