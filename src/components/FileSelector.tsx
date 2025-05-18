@@ -1,5 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { View, StyleSheet, Pressable, Text, StyleProp, ViewStyle } from 'react-native'
+import {DocumentPickerOptions, DocumentPickerResponse, pick } from '@react-native-documents/picker'
 import colors from '../utils/colors';
 
 
@@ -7,10 +8,29 @@ interface Props {
     icon?: ReactNode,
     btnTitle?: string,
     style?: StyleProp<ViewStyle>
+    onSelect (file: DocumentPickerResponse): void  
+    options : DocumentPickerOptions // the type of doc user will be able to upload 
 }
-const FileSelector: FC<Props> = ({ icon, btnTitle, style }) => {
+const FileSelector: FC<Props> = ({ icon, btnTitle, style, onSelect, options }) => {
+
+    //For picking doc from user device 
+    const handleDocumentSelect = async () => {
+        console.log('clicked');
+        try {
+            const doc = await pick(options);
+            // as the selected file will be inside an array
+            const file = doc[0]
+            onSelect(file)
+        } catch (e: any) {
+            if (e?.code === 'DOCUMENT_PICKER_CANCELED') {
+                // User cancelled the picker, do nothing
+                return;
+            }
+            console.log(e);
+        }
+    };
     return (
-        <Pressable style={{alignItems: "center"}}>
+        <Pressable onPress={handleDocumentSelect} style={{alignItems: "center"}}>
             <View style={[styles.btnContainer, style]}>
                 {icon}
             </View>

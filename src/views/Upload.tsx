@@ -8,29 +8,56 @@ import FileSelector from '../components/FileSelector';
 import AppButton from '../components/ui/AppButton';
 import CategorySelector from '../components/CategorySelector';
 import { categories } from '../utils/Categories';
+import {  DocumentPickerResponse, types } from '@react-native-documents/picker';
 
 
-interface Props {
-
+interface FormFiels{
+  title: string;
+  category: string;
+  about: string;
+  file?: DocumentPickerResponse; //from Document-Picker
+  poster?: DocumentPickerResponse; //from Document-Picker
 }
+
+//default form value for useState audioInfo 
+const defaultForm : FormFiels = {
+  title: "",
+  category: "",
+  about: ""
+}
+
+
+interface Props {}
+
 const Upload: FC<Props> = props => {
   const [showCategoryModal, SetShowCategoryModal] = useState(false)
-  const [audioInfo, setAudioInfo]  = useState({
-    category: '',
-    
-  })
+  const [audioInfo, setAudioInfo]  = useState({...defaultForm})
+
+  // handle upload event 
+  const handleUpload = ()=>{
+    console.log('clicked')
+    console.log(audioInfo)
+  }
   return (
     <ScrollView style={styles.container}>
       <View style={styles.fileSelectorContainer}>
         <FileSelector 
-          icon=<MaterialCommunityIcons name='image-outline' size={36} color={colors.SECONDARY} /> 
-          btnTitle={'Select Poster'} 
+          icon=<MaterialCommunityIcons name='image-outline' size={36} color={colors.SECONDARY} />
+          btnTitle={'Select Poster'}
+          options={{ type: [types.images] }} 
+          onSelect={(file)=>{
+            setAudioInfo({ ...audioInfo, file })
+          } }        
         />
         <FileSelector
           icon=<MaterialIcons
            name='audio-file' size={36} color={colors.SECONDARY} />
           btnTitle="Select Audio"
           style={{marginLeft: 20}}
+          options={{type:[types.audio]}}
+           onSelect={(file)=>{
+            setAudioInfo({ ...audioInfo, poster: file })
+          } }
         />
       </View>
 
@@ -40,6 +67,9 @@ const Upload: FC<Props> = props => {
           placeholder='Title' 
           style={styles.input} 
           placeholderTextColor={colors.INACTIVE_CONTRAST}
+          onChangeText={(text)=>{
+            setAudioInfo({...audioInfo, title: text})
+          }}
         />
         <Pressable onPress={()=> SetShowCategoryModal(true)} style={styles.categorySelector}>
           <Text style={styles.categoryTitle}> Category</Text>
@@ -50,6 +80,9 @@ const Upload: FC<Props> = props => {
           style={styles.input} 
           placeholderTextColor={colors.INACTIVE_CONTRAST}
           multiline
+          onChangeText={(text)=>{
+            setAudioInfo({...audioInfo, about: text})
+          }}
         />
         
         {/* This is the custom we made usign react native modal */}
@@ -64,11 +97,12 @@ const Upload: FC<Props> = props => {
             return <Text style={styles.category}>{item}</Text>
           }}
           onSelect = {(item) =>{
-            setAudioInfo({category: item})
+           // Update only the 'category' field while preserving the rest of the audioInfo object
+            setAudioInfo({...audioInfo,category: item})
           }}
         />
         <View style={{marginBottom: 20}} />
-        <AppButton title="Submit" borderRadius={7} />
+        <AppButton title="Submit" borderRadius={7} onPress={handleUpload} />
       </View>
     </ScrollView>
   )
