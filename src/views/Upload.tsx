@@ -8,10 +8,13 @@ import FileSelector from '../components/FileSelector';
 import AppButton from '../components/ui/AppButton';
 import CategorySelector from '../components/CategorySelector';
 import { categories } from '../utils/Categories';
-import {  DocumentPickerResponse, types } from '@react-native-documents/picker';
+import { DocumentPickerResponse, types } from '@react-native-documents/picker';
+import * as yup from 'yup'
+import client from '../api/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
 
-
-interface FormFiels{
+interface FormFiels {
   title: string;
   category: string;
   about: string;
@@ -20,88 +23,149 @@ interface FormFiels{
 }
 
 //default form value for useState audioInfo 
-const defaultForm : FormFiels = {
+const defaultForm: FormFiels = {
   title: "",
   category: "",
   about: ""
 }
 
+//form validation usign yup
+const audionInfoSchema = yup.object().shape({
+  title: yup.string().trim().required("Title is Missing!"),
+  category: yup.string().oneOf(categories, "Category is Missing!"),
+  about: yup.string().trim().required("About is Missing!"),
+  file: yup.object().shape({
+    uri: yup.string().required("Audio file is Missing!"),
+    name: yup.string().required("Auido file is Missing!"),
+    type: yup.string().required("Auido file is Missing!"),
+    size: yup.number().required("Auido file is Missing!"),
+  }),
+  poster: yup.object().shape({
+    uri: yup.string(),
+    name: yup.string(),
+    type: yup.string(),
+    size: yup.number()
+  }),
+})
 
-interface Props {}
+
+interface Props { }
 
 const Upload: FC<Props> = props => {
   const [showCategoryModal, SetShowCategoryModal] = useState(false)
-  const [audioInfo, setAudioInfo]  = useState({...defaultForm})
+  const [audioInfo, setAudioInfo] = useState({ ...defaultForm })
 
   // handle upload event 
-  const handleUpload = ()=>{
-    console.log('clicked')
-    console.log(audioInfo)
+  const handleUpload = async () => {
+    try {
+      //validation usign yup
+      const finalData = await audionInfoSchema.validate(audioInfo);
+
+      //beacause we have to send the file as formData type
+      const formData = new FormData()
+      formData.append('title', finalData.title)
+      formData.append('about', finalData.about)
+      formData.append('category', finalData.category)
+      formData.append('file', {
+        name: finalData.file.name,
+        uri: finalData.file.uri,
+        size: finalData.file.size,
+      })
+      // Because poster is optional 
+      if (finalData.poster.uri) {
+        formData.append('poster', {
+          name: finalData.poster.name,
+          uri: finalData.poster.uri,
+          size: finalData.poster.size,
+        })
+      }
+
+      const token = await getFromAsyncStorage(keys.Auth_TOKEN);
+      console.log(token)
+      if (!token) return
+  
+      const { data } = await client.post('/audio/create', formData, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+          "Content-Type": "multipart/form-data"
+        }
+      })
+
+      console.log('Bearer ' + token)
+      console.log(data)
+    } catch (e: any) {
+      console.log('entered')
+      if (e.response) {
+        console.log(e.response.data); // Axios-specific error
+      } else {
+        console.log('Non-Axios error:', e.message || e);
+      }
+    }
   }
   return (
     <ScrollView style={styles.container}>
       <View style={styles.fileSelectorContainer}>
-        <FileSelector 
+        <FileSelector
           icon=<MaterialCommunityIcons name='image-outline' size={36} color={colors.SECONDARY} />
           btnTitle={'Select Poster'}
-          options={{ type: [types.images] }} 
-          onSelect={(file)=>{
+          options={{ type: [types.images] }}
+          onSelect={(file) => {
             setAudioInfo({ ...audioInfo, file })
-          } }        
+          }}
         />
         <FileSelector
           icon=<MaterialIcons
-           name='audio-file' size={36} color={colors.SECONDARY} />
+            name='audio-file' size={36} color={colors.SECONDARY} />
           btnTitle="Select Audio"
-          style={{marginLeft: 20}}
-          options={{type:[types.audio]}}
-           onSelect={(file)=>{
+          style={{ marginLeft: 20 }}
+          options={{ type: [types.audio] }}
+          onSelect={(file) => {
             setAudioInfo({ ...audioInfo, poster: file })
-          } }
+          }}
         />
       </View>
 
       {/* form  */}
       <View style={styles.formContainer}>
-         <TextInput 
-          placeholder='Title' 
-          style={styles.input} 
+        <TextInput
+          placeholder='Title'
+          style={styles.input}
           placeholderTextColor={colors.INACTIVE_CONTRAST}
-          onChangeText={(text)=>{
-            setAudioInfo({...audioInfo, title: text})
+          onChangeText={(text) => {
+            setAudioInfo({ ...audioInfo, title: text })
           }}
         />
-        <Pressable onPress={()=> SetShowCategoryModal(true)} style={styles.categorySelector}>
+        <Pressable onPress={() => SetShowCategoryModal(true)} style={styles.categorySelector}>
           <Text style={styles.categoryTitle}> Category</Text>
           <Text style={styles.selectedCategory}>{audioInfo.category}</Text>
         </Pressable>
-        <TextInput 
-          placeholder='About' 
-          style={styles.input} 
+        <TextInput
+          placeholder='About'
+          style={styles.input}
           placeholderTextColor={colors.INACTIVE_CONTRAST}
           multiline
-          onChangeText={(text)=>{
-            setAudioInfo({...audioInfo, about: text})
+          onChangeText={(text) => {
+            setAudioInfo({ ...audioInfo, about: text })
           }}
         />
-        
+
         {/* This is the custom we made usign react native modal */}
-        <CategorySelector 
-          title='Category' 
-          visible={showCategoryModal} 
-          onRequestClose={()=>{
+        <CategorySelector
+          title='Category'
+          visible={showCategoryModal}
+          onRequestClose={() => {
             SetShowCategoryModal(false)
           }}
           data={categories}
-          renderItem={(item)=>{
+          renderItem={(item) => {
             return <Text style={styles.category}>{item}</Text>
           }}
-          onSelect = {(item) =>{
-           // Update only the 'category' field while preserving the rest of the audioInfo object
-            setAudioInfo({...audioInfo,category: item})
+          onSelect={(item) => {
+            // Update only the 'category' field while preserving the rest of the audioInfo object
+            setAudioInfo({ ...audioInfo, category: item })
           }}
         />
-        <View style={{marginBottom: 20}} />
+        <View style={{ marginBottom: 20 }} />
         <AppButton title="Submit" borderRadius={7} onPress={handleUpload} />
       </View>
     </ScrollView>
@@ -116,35 +180,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10
   },
-  formContainer:{
+  formContainer: {
     marginTop: 20
   },
-  input:{
+  input: {
     borderWidth: 2,
     borderColor: colors.SECONDARY,
     borderRadius: 7,
     padding: 10,
     fontSize: 18,
     color: colors.CONTRAST,
-  
+
     textAlignVertical: "top"
   },
-  category:{
+  category: {
     padding: 10,
     color: colors.PRIMARY
   },
-  categorySelector:{
+  categorySelector: {
     flexDirection: "row",
     alignItems: 'center',
     marginVertical: 20
   },
-  categoryTitle:{
+  categoryTitle: {
     color: colors.CONTRAST
   },
-  selectedCategory:{
+  selectedCategory: {
     color: colors.SECONDARY,
-      marginLeft: 5,
-      fontStyle: 'italic'
+    marginLeft: 5,
+    fontStyle: 'italic'
   }
 });
 
