@@ -16,12 +16,14 @@ export interface UserProfile {
 interface AuthState {
   profile: UserProfile | null; // User's profile info, null if not logged in
   loggedIn: boolean;           // Whether the user is logged in
+  busy: boolean
 }
 
 // Initial/default state for the auth slice
 const initialState: AuthState = {
   profile: null,
   loggedIn: false,
+  busy: false
 };
 
 // Create the auth slice using Redux Toolkit
@@ -37,11 +39,14 @@ const slice = createSlice({
     updateLoggedInState(authState, { payload }) {
       authState.loggedIn = payload; // Set the logged-in flag (true/false)
     },
+     updateBusyState(authState, { payload }: PayloadAction<boolean>) {
+      authState.busy = payload; // Set the busy to the flag
+    },
   },
 });
 
 // Actions — auto-generated action creators from reducers
-export const { updateProfile, updateLoggedInState } = slice.actions;
+export const { updateProfile, updateLoggedInState, updateBusyState } = slice.actions;
 
 
 // Selector to get the entire auth state from the Redux store using createSelector for memoization

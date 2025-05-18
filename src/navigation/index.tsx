@@ -2,34 +2,41 @@ import { NavigationContainer } from '@react-navigation/native';
 import { FC, useEffect } from 'react'
 import AuthNavigator from './AuthNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAuthState, updateLoggedInState, updateProfile } from '../store/auth';
+import { getAuthState, updateBusyState, updateLoggedInState, updateProfile } from '../store/auth';
 import TabNavigator from './TabNavigator';
 import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
 import client from '../api/client';
+import Loader from '../ui/Loader';
+import { StyleSheet, View } from 'react-native';
+import colors from '../utils/colors';
 
 
 interface Props {
 
 }
 const AppNavigator: FC<Props> = props => {
-    const {loggedIn} = useSelector(getAuthState)
+    const { loggedIn, busy } = useSelector(getAuthState)
     const dispatch = useDispatch()
-    useEffect(()=>{
-        const fetchAuthInfo = async()=>{
-            try{
+    useEffect(() => {
+        const fetchAuthInfo = async () => {
+            //update bsuy state to show loader 
+            dispatch(updateBusyState(true))
+            try {
                 const token = await getFromAsyncStorage(keys.Auth_TOKEN)
-                if(!token) return;
-                const {data} = await client.get("/auth/is-auth", {
-                    headers:{
+                if (!token) return;
+                const { data } = await client.get("/auth/is-auth", {
+                    headers: {
                         Authorization: "Bearer " + token
                     }
                 })
+                dispatch(updateBusyState(false))
                 dispatch(updateProfile(data.profile));
                 dispatch(updateLoggedInState(true))
-                console.log('Data from useEffect:',data)
-            }catch(e){
+                console.log('Data from useEffect:', data)
+            } catch (e) {
                 console.log(e)
             }
+            dispatch(updateBusyState(false))
         }
         fetchAuthInfo()
     }, [])
@@ -37,7 +44,11 @@ const AppNavigator: FC<Props> = props => {
 
     return (
         <NavigationContainer>
-            {loggedIn? <TabNavigator /> : <AuthNavigator />}   
+            {busy ? <View style={{
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: colors.OVERLAY, justifyContent: "center", alignItems: "center", zIndex: 1
+            }}><Loader /></View> : null}
+            {loggedIn ? <TabNavigator /> : <AuthNavigator />}
         </NavigationContainer>
     )
 };
