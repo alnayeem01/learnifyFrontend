@@ -7,13 +7,16 @@ import Loader from '../../ui/Loader';
 interface Props{
     title: string | ReactNode;
     onPress?: ()=>void,
-    busy?: boolean
+    busy?: boolean,
+    borderRadius?: number
 }
 const AppButton:FC<Props> = props => {
   return (
     <Pressable 
         onPress={props.onPress} 
-        style= {styles.container}
+        style= {[styles.container,{
+            borderRadius: props.borderRadius || 25
+        }]}
     >
         {!props.busy ? <Text>{props.title}</Text> : <Loader />}
     </Pressable>
@@ -27,7 +30,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.SECONDARY,
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 25
+     
     },
     title: {
         color: colors.CONTRAST,
