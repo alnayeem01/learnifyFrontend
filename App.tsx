@@ -6,12 +6,15 @@ import AuthNavigator from './src/navigation/AuthNavigator'
 import { Provider } from 'react-redux'
 import store from './src/store'
 import AppNavigator from './src/navigation'
+import AppContainer from './src/components/AppContainer'
 
 const App = () => {
   return (
     // <Provider> makes the Redux store available to all components in the app
     <Provider store={store}>
-      <AppNavigator />
+      <AppContainer>
+        <AppNavigator />
+      </AppContainer>
     </Provider>
   )
 }
