@@ -39,14 +39,14 @@ const Notification: FC<Props> = props => {
             });
             timeoutId = setTimeout(()=>{
                 height.value = withTiming(0,{
-                    duration: 30
+                    duration: 150
                 });
                 // after notifioan is show for the durion we reset the state for notificaion states
-                dispatch(updateNotification({message: " ", type: "error"}))
-            }, 3000)
+                dispatch(updateNotification({message: " ", type}))
+            }, 2000)
         }
 
-        performAnimaition()
+        if(message) performAnimaition()
         
         return () => {
             clearTimeout(timeoutId);

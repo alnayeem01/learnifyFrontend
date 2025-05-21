@@ -37,18 +37,30 @@ const handlePasswordResetLink = async (values: { email: string }, actions: Formi
   actions.setSubmitting(true)
   console.log(values.email)
   try {
-    const {data} = await client.post('/auth/forget-password', {email: values.email})
+    const { data } = await client.post('/auth/forget-password', { email: values.email })
 
   } catch (e) {
     console.log(e)
   }
-    actions.setSubmitting(false)
+  actions.setSubmitting(false)
 }
 
 const LostPassword: FC<Props> = props => {
 
   //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+
+  const handlePasswordResetLink = async (values: { email: string }, actions: FormikHelpers<{ email: string }>) => {
+    actions.setSubmitting(true)
+    console.log(values.email)
+    try {
+      const { data } = await client.post('/auth/forget-password', { email: values.email })
+
+    } catch (e) {
+      console.log(e)
+    }
+    actions.setSubmitting(false)
+  }
 
   return (
     <Form

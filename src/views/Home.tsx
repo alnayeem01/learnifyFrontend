@@ -1,18 +1,21 @@
 import { FC } from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet, Text, Button } from 'react-native'
+import { useDispatch } from 'react-redux';
+import { updateNotification } from '../store/notificaton';
 
 
-interface Props{
+interface Props {
 
 }
-const Home:FC<Props> = props => {
+const Home: FC<Props> = props => {
+  const dispatch = useDispatch()
   return <View style={styles.container}>
     <Text>Home</Text>
   </View>
 };
 
 const styles = StyleSheet.create({
-    container: {}
+  container: {}
 });
 
 export default Home;
