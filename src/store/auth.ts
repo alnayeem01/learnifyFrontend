@@ -51,8 +51,9 @@ export const { updateProfile, updateLoggedInState, updateBusyState } = slice.act
 
 // Selector to get the entire auth state from the Redux store using createSelector for memoization
 export const getAuthState = createSelector(
-    (state : RootState)=> state,       // Input selector: takes the whole state
-    (authState)=> authState            // Output selector: returns the auth state slice
+    (state : RootState)=> state.auth,       
+    (auth)=> auth
+
 )
 
 // Reducer — to be registered in the store
