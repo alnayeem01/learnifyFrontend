@@ -1,13 +1,12 @@
 import React, { FC, useState } from 'react'
 import { StyleSheet, Text, ScrollView, Pressable, View } from 'react-native'
-import { useFetchLatestAudios, useFetchPlaylist } from '../../hooks/query';
-import PulseAnimationContainer from '../ui/PulseAnimationContainer';
+import { useFetchPlaylist } from '../../hooks/query';
 import LatestUploads from '../components/LatestUploads';
 import RecommendedAudios from '../components/RecommendedAudios';
 import OptionsModal from '../components/OptionsModal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../utils/colors';
-import { AudioData } from '../@types/audio';
+import { AudioData, PlayList } from '../@types/audio';
 import client from '../api/client';
 import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
 import catchAsyncError from '../api/catchError';
@@ -50,8 +49,6 @@ const Home: FC<Props> = props => {
       //close the modal
       setShowOptions(false);
   };
-
-
   const handleOnLongPress =(audio: AudioData)=>{
     setSelectedAudio(audio);
     setShowOptions(true);
@@ -81,8 +78,33 @@ const Home: FC<Props> = props => {
     }
   }
 
+  const updatePlayList = async (item: PlayList)=>{
+      try{
+        console.log( item.id,
+          selectedAudio?.id,
+           item.title,
+          item.visibility)
+        const token = await getFromAsyncStorage(keys.Auth_TOKEN);
+        const {data} = await client.patch('/playlist/update',{
+          id: item.id,
+          item : selectedAudio?.id,
+          title: item.title,
+          visibility: item.visibility
+        }, {
+          headers:{
+            Authorization : 'Bearer ' + token
+          }
+        });
+        setSelectedAudio(undefined);
+        setShowPlaylistModal(false)
+        dispatch(updateNotification({type: 'success', message: 'Playlist Updated'}))
+      }catch(e){
+        console.log(e)
+      }
+  }
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <LatestUploads
         onAudioLongPress={ handleOnLongPress}
         onAudioPress={() => console.log('object')}
@@ -113,6 +135,7 @@ const Home: FC<Props> = props => {
         }}
       />
       <PlaylistModal 
+        onPlayListPress={updatePlayList}
         visible={showPlaylistModal} 
         onRequestClose={() => {
         setShowPlaylistModal(false);}} 
@@ -127,13 +150,13 @@ const Home: FC<Props> = props => {
         onRequestClose={() => setShowPlayListFormModal(false)}
         onSubmit={handlePlaylistSubmit}
       />
-    </ScrollView>
+    </View>
   )
 };
 
 const styles = StyleSheet.create({
   container: {
-  
+    flex: 1,
     padding: 10
   },
   optionContainer:{ 

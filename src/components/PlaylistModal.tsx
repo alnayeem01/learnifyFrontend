@@ -11,6 +11,7 @@ interface Props {
     onRequestClose(): void
     list: PlayList[],
     onCreateNewPress(): void
+    onPlayListPress(item : PlayList): void
 }
 interface ListItemProps {
     title: string,
@@ -26,7 +27,7 @@ const ListItem: FC<ListItemProps> = ({ title, icon, onPress }) => {
         </Pressable>
     )
 }
-const PlaylistModal: FC<Props> = ({ list, visible, onRequestClose, onCreateNewPress  }) => {
+const PlaylistModal: FC<Props> = ({ list, visible, onRequestClose, onCreateNewPress, onPlayListPress  }) => {
     return (
         <BasicModalContainer onRequestClose={onRequestClose} visible={visible}>
             {/* We want to render playlist */}
@@ -34,6 +35,7 @@ const PlaylistModal: FC<Props> = ({ list, visible, onRequestClose, onCreateNewPr
                 { list.map((item) => {
                     return (
                         <ListItem
+                        onPress={()=> onPlayListPress(item)}
                             key={item.id}
                             title={item.title}
                             // if visibility private show lock icon else globe icon 
