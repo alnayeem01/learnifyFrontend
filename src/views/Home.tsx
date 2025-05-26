@@ -14,6 +14,7 @@ import catchAsyncError from '../api/catchError';
 import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
+import PlaylistForm from '../components/PlaylistForm';
 
 
 
@@ -23,7 +24,10 @@ interface Props {
 
 const Home: FC<Props> = props => {
 
+  const [isPrivate, setIsPrivate] = useState<boolean>(false)
   const [showOptions, setShowOptions] = useState<boolean>(false)
+  const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
+   const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
   const [selectedAudio, setSelectedAudio] = useState<AudioData>()
   const dispatch = useDispatch()
   const handleOnFavPress = async ()=>{
@@ -52,6 +56,11 @@ const Home: FC<Props> = props => {
     setShowOptions(true);
   };
 
+  const handleOnAddToPlaylist =()=>{
+    setShowPlaylistModal(true);
+    setShowOptions(false)
+  };
+
   return (
     <ScrollView style={styles.container}>
       <LatestUploads
@@ -68,7 +77,7 @@ const Home: FC<Props> = props => {
           setShowOptions(false)
         }}
         options={[
-          { title: 'Add to Playlist', icon: 'playlist-music'},
+          { title: 'Add to Playlist', icon: 'playlist-music', onPress:handleOnAddToPlaylist},
           { title: 'Add to favourite', icon: 'cards-heart',  onPress: handleOnFavPress },
         ]}
         renderItem={(item: any) => {
@@ -83,11 +92,22 @@ const Home: FC<Props> = props => {
           )
         }}
       />
-
       <PlaylistModal 
-        visible={true}
-        onRequestClose={() => console.log('object')}
-        list={[]}       
+        visible={showPlaylistModal} 
+        onRequestClose={() => {
+        setShowPlaylistModal(false);}} 
+        list={[]} 
+        onCreateNewPress={()=>{
+          setShowPlaylistModal(false);
+          setShowPlayListFormModal(true)
+        }} 
+      />
+      <PlaylistForm 
+        visible={showPlayListFormModal} 
+        onRequestClose={() => setShowPlayListFormModal(false)}
+        onSubmit={value =>{
+          console.log(value)
+        }}
       />
     </ScrollView>
   )
