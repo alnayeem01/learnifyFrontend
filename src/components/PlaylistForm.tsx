@@ -5,7 +5,7 @@ import colors from '../utils/colors';
 import MaterialComIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
-interface PlayListInfo{
+export interface PlayListInfo{
     title: string;
     private: boolean
 }
@@ -31,7 +31,7 @@ const PlaylistForm:FC<Props> = ({onRequestClose, onSubmit, visible}) => {
         setPlayListInfo({ title: "",private: false});
         onRequestClose()
     };
-    
+
   return(
     <BasicModalContainer visible={visible} onRequestClose ={onRequestClose}>
         <View>

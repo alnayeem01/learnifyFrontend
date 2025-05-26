@@ -31,7 +31,7 @@ const PlaylistModal: FC<Props> = ({ list, visible, onRequestClose, onCreateNewPr
         <BasicModalContainer onRequestClose={onRequestClose} visible={visible}>
             {/* We want to render playlist */}
             <ScrollView>
-                {list.map((item) => {
+                { list.map((item) => {
                     return (
                         <ListItem
                             key={item.id}

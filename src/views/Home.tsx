@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import { StyleSheet, Text, ScrollView, Pressable, View } from 'react-native'
-import { useFetchLatestAudios } from '../../hooks/query';
+import { useFetchLatestAudios, useFetchPlaylist } from '../../hooks/query';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
 import LatestUploads from '../components/LatestUploads';
 import RecommendedAudios from '../components/RecommendedAudios';
@@ -14,7 +14,7 @@ import catchAsyncError from '../api/catchError';
 import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
-import PlaylistForm from '../components/PlaylistForm';
+import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
 
 
 
@@ -24,11 +24,12 @@ interface Props {
 
 const Home: FC<Props> = props => {
 
-  const [isPrivate, setIsPrivate] = useState<boolean>(false)
   const [showOptions, setShowOptions] = useState<boolean>(false)
   const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
    const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
   const [selectedAudio, setSelectedAudio] = useState<AudioData>()
+
+  const {data}  = useFetchPlaylist()
   const dispatch = useDispatch()
   const handleOnFavPress = async ()=>{
     if(!selectedAudio) return;
@@ -60,6 +61,25 @@ const Home: FC<Props> = props => {
     setShowPlaylistModal(true);
     setShowOptions(false)
   };
+
+  const handlePlaylistSubmit =async (value: PlayListInfo)=>{
+    try{
+      if(!value.title.trim()) return;
+      const token = await getFromAsyncStorage(keys.Auth_TOKEN)
+      const {data} = await client.post('playlist/create',{
+        resId: selectedAudio?.id,
+        title: value.title,
+        visibility: value.private ? 'private' : 'public'
+      }, {
+        headers:{
+          Authorization : 'Bearer ' + token
+        }
+      })
+      console.log(data)
+    }catch(e){
+      console.log(catchAsyncError(e))
+    }
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -96,7 +116,7 @@ const Home: FC<Props> = props => {
         visible={showPlaylistModal} 
         onRequestClose={() => {
         setShowPlaylistModal(false);}} 
-        list={[]} 
+        list={data ||[]} 
         onCreateNewPress={()=>{
           setShowPlaylistModal(false);
           setShowPlayListFormModal(true)
@@ -105,9 +125,7 @@ const Home: FC<Props> = props => {
       <PlaylistForm 
         visible={showPlayListFormModal} 
         onRequestClose={() => setShowPlayListFormModal(false)}
-        onSubmit={value =>{
-          console.log(value)
-        }}
+        onSubmit={handlePlaylistSubmit}
       />
     </ScrollView>
   )
