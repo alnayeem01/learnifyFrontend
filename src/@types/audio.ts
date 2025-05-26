@@ -1,14 +1,26 @@
 import { categoriesTypes } from "../utils/Categories";
 
+// export interface AudioData {
+//     id: string,
+//     title: string;
+//     about: string;
+//     category: categoriesTypes;
+//     poster?: {
+//         url: string;
+//         publicId: string;
+//     } | undefined;
+//     owner: {
+//         name: string;
+//         id: string;
+//     }
+// };
 export interface AudioData {
     id: string,
     title: string;
     about: string;
     category: categoriesTypes;
-    poster?: {
-        url: string;
-        publicId: string;
-    } | undefined;
+    file: string;
+    poster?: string | undefined;
     owner: {
         name: string;
         id: string;

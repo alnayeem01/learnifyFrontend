@@ -9,7 +9,7 @@ import CategorySelector from '../components/CategorySelector';
 import { categories } from '../utils/Categories';
 import { DocumentPickerResponse, types } from '@react-native-documents/picker';
 import * as yup from 'yup'
-import client from '../api/client';
+import client, { getClient } from '../api/client';
 import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
 import Progress from '../ui/Progress';
 import { mapRange } from '../utils/math';
@@ -85,13 +85,8 @@ const Upload: FC<Props> = props => {
           uri: finalData.poster.uri,
         });
 
-      const token = await getFromAsyncStorage(keys.Auth_TOKEN);
-
-      const data = await client.post('/audio/create', formData, {
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'multipart/form-data;',
-        },
+      const client = await getClient({'Content-Type': 'multipart/form-data;'});
+      const data = await client.post('/audio/create', formData,{
         //using the onUploadProgress function from axios to calcoulate the percerntage of progress 
         onUploadProgress(progressEvent) {
           // util function for calculating progress

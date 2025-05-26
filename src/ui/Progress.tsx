@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, StyleProp, ViewStyle } from 'react-native'
 import colors from '../utils/colors';
 
 
+
 interface Props{
     progress : number
     style?: StyleProp<ViewStyle>

@@ -7,7 +7,7 @@ import OptionsModal from '../components/OptionsModal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../utils/colors';
 import { AudioData, PlayList } from '../@types/audio';
-import client from '../api/client';
+import client, { getClient } from '../api/client';
 import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
 import catchAsyncError from '../api/catchError';
 import { useDispatch } from 'react-redux';
@@ -32,14 +32,10 @@ const Home: FC<Props> = props => {
   const dispatch = useDispatch()
   const handleOnFavPress = async ()=>{
     if(!selectedAudio) return;
-    const token = await getFromAsyncStorage(keys.Auth_TOKEN);
     //send request with the audio id that we want to add to the favourite playlist 
     try{
-      const {data} = await client.post('/favourite?audioId=' + selectedAudio.id,null, {
-        headers:{
-          Authorization: 'Bearer ' + token
-        }
-      });
+      const client = await getClient()
+      const {data} = await client.post('/favourite?audioId=' + selectedAudio.id,null);
     }catch(e){
         const errorMessage = catchAsyncError(e);
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
@@ -62,17 +58,12 @@ const Home: FC<Props> = props => {
   const handlePlaylistSubmit =async (value: PlayListInfo)=>{
     try{
       if(!value.title.trim()) return;
-      const token = await getFromAsyncStorage(keys.Auth_TOKEN)
+      const client = await getClient();
       const {data} = await client.post('playlist/create',{
         resId: selectedAudio?.id,
         title: value.title,
         visibility: value.private ? 'private' : 'public'
-      }, {
-        headers:{
-          Authorization : 'Bearer ' + token
-        }
       })
-      console.log(data)
     }catch(e){
       console.log(catchAsyncError(e))
     }
@@ -80,21 +71,13 @@ const Home: FC<Props> = props => {
 
   const updatePlayList = async (item: PlayList)=>{
       try{
-        console.log( item.id,
-          selectedAudio?.id,
-           item.title,
-          item.visibility)
-        const token = await getFromAsyncStorage(keys.Auth_TOKEN);
+        const client = await getClient()
         const {data} = await client.patch('/playlist/update',{
           id: item.id,
           item : selectedAudio?.id,
           title: item.title,
           visibility: item.visibility
-        }, {
-          headers:{
-            Authorization : 'Bearer ' + token
-          }
-        });
+        },);
         setSelectedAudio(undefined);
         setShowPlaylistModal(false)
         dispatch(updateNotification({type: 'success', message: 'Playlist Updated'}))
