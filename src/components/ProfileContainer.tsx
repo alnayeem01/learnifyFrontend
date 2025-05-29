@@ -5,6 +5,9 @@ import AvatarField from './ui/AvatarField';
 import colors from '../utils/colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { ProfileNavigatorStackParamList } from '../@types/navigation';
+
 
 interface Props {
     profile?: UserProfile | null,
@@ -12,7 +15,8 @@ interface Props {
 }
 const ProfileContainer: FC<Props> = ({ profile }) => {
     if (!profile) return null;
-
+    // As this is a nested navigation follow this type declaration standard 
+    const {navigate} = useNavigation<NavigationProp<ProfileNavigatorStackParamList>>(); 
     return (
         <View style={styles.container}>
             <AvatarField source={profile.avatar} />
@@ -32,7 +36,10 @@ const ProfileContainer: FC<Props> = ({ profile }) => {
                 </View>
             </View>
 
-            <Pressable style={styles.settingContainer}>
+            <Pressable 
+                style={styles.settingContainer}
+                onPress={()=> navigate('ProfileSettings')}
+            >
                 <AntDesign name='setting' size={20} color={colors.CONTRAST} />
             </Pressable>
         </View>

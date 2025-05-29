@@ -5,6 +5,7 @@ import Upload from "../views/Upload"
 import colors from "../utils/colors"
 import AntDesign from "react-native-vector-icons/AntDesign"
 import Entypo from "react-native-vector-icons/Entypo"
+import ProfileNavigator from "./ProfileNavigator"
 
 
 
@@ -25,7 +26,8 @@ const TabNavigator = () => {
                 },
                 tabBarLabel: "Home"
             }} />
-            <Tab.Screen name="ProfileScreen" component={Profile} options={{
+            {/* On This screen we are trying to render nested navigation */}
+            <Tab.Screen name="ProfileNavigator" component={ProfileNavigator} options={{
                 tabBarIcon: (props)=>{
                     return <AntDesign name="user" color={props.color} size={props.size}/>
                 },

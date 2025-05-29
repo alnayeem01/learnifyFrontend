@@ -14,3 +14,11 @@ export type AuthStackParamList = {
     LostPassword: undefined;
     Verification: {userInfo: NewUserRespones};
 }
+
+
+
+// This is the type declaration for navigation of ProfileNavigator
+export type ProfileNavigatorStackParamList = {
+    Profile: undefined;
+    ProfileSettings: undefined;
+}
