@@ -32,7 +32,10 @@ const AppNavigator: FC<Props> = props => {
             dispatch(updateBusyState(true))
             try {
                 const token = await getFromAsyncStorage(keys.Auth_TOKEN)
-                if (!token) return;
+                if (!token){
+                    dispatch(updateBusyState(false));
+                    return;
+                }
                 const { data } = await client.get("/auth/is-auth", {
                     headers: {
                         Authorization: "Bearer " + token
