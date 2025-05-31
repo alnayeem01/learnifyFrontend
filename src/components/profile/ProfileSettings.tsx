@@ -13,7 +13,9 @@ import { updateNotification } from '../../store/notificaton';
 import { keys, removeFromAsyncStorage } from '../../utils/asyncStorage';
 import { getAuthState, updateBusyState, updateLoggedInState, updateProfile } from '../../store/auth';
 import deepEqual from 'deep-equal';
-
+import ImagePicker from "react-native-image-crop-picker";
+import ReVerification from '../ReVerification';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props { }
 
@@ -24,6 +26,7 @@ interface ProfileInfo {
 
 const ProfileSettings: FC<Props> = props => {
   const [userInfo, setUserInfo] = useState<ProfileInfo>({ name: "" });
+  const [busy,setBusy] = useState(false);
   const dispatch = useDispatch();
   const { profile } = useSelector(getAuthState);        //getting it from redux store 
 
@@ -55,19 +58,47 @@ const ProfileSettings: FC<Props> = props => {
 
   // when user submit with updated data for userInfo
   const hanldleSubmit = async () => {
+    setBusy(true)
     try {
       if (!userInfo.name.trim()) {
         return dispatch(updateNotification({ message: 'Profile name is required!', type: 'error' }))
       };
       const formData = new FormData();
       formData.append('name', userInfo.name);
+
+      //if user Changes avatar add to the formData
+      if(userInfo.avatar){
+        formData.append('avatar', {
+          name: 'avatar',
+          type: 'image/jpeg',
+          uri: userInfo.avatar
+        })
+      }
+
       const client = await getClient({ "Content-Type": "multipart/form-data" })
       const {data} = await client.post('/auth/update-profile', formData);
       //update the profile state in redux store after API call is made
       dispatch(updateProfile(data.profile));
+       dispatch(updateNotification({ message: "Your Profile is updated!", type: 'success' }))
     } catch (e) {
        const errorMessage = catchAsyncError(e);
       dispatch(updateNotification({ message: errorMessage, type: 'error' }))
+    }
+     setBusy(false)
+  };
+
+  //image Select
+  const handleImageSelect = async ()=>{
+    console.log('here')
+    try{
+      const {path} = await ImagePicker.openPicker({
+        cropping: false,
+        height: 400,
+        width: 300
+      });
+      setUserInfo({...userInfo, avatar: path});
+    }catch(e){
+      console.log(e)
     }
   }
 
@@ -83,8 +114,8 @@ const ProfileSettings: FC<Props> = props => {
     </View>
     <View style={styles.settignsOptionsContainer}>
       <View style={styles.avatarContainer}>
-        <AvatarField />
-        <Pressable style={styles.paddingLeft} >
+        <AvatarField source={userInfo.avatar} />
+        <Pressable style={styles.paddingLeft} onPress={(handleImageSelect)}  >
           <Text style={styles.linkText}>Update Profile Image</Text>
         </Pressable>
       </View>
@@ -96,11 +127,16 @@ const ProfileSettings: FC<Props> = props => {
       />
       <View style={styles.emailContainer}>
         <Text style={styles.email}>{profile?.email}</Text>
+        {profile?.verified ? 
         <MaterialIcons
           name='verified'
           size={15}
           color={colors.SECONDARY}
+        /> : 
+        <ReVerification time={60} linkTitle='verify' 
+          ativeAtFirst
         />
+        }
       </View>
     </View>
 
@@ -120,7 +156,7 @@ const ProfileSettings: FC<Props> = props => {
     </View>
     {!isSame ?
       <View style={styles.marignTop}>
-        <AppButton title='Submit' borderRadius={7} onPress={hanldleSubmit} />
+        <AppButton title='Submit' borderRadius={7} onPress={hanldleSubmit} busy={busy} />
       </View> : null
     }
 

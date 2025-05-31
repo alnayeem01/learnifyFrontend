@@ -4,9 +4,10 @@ import { UserProfile } from '../store/auth';
 import AvatarField from './ui/AvatarField';
 import colors from '../utils/colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Octicons from 'react-native-vector-icons/Octicons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ProfileNavigatorStackParamList } from '../@types/navigation';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 const ProfileContainer: FC<Props> = ({ profile }) => {
     if (!profile) return null;
     // As this is a nested navigation follow this type declaration standard 
-    const {navigate} = useNavigation<NavigationProp<ProfileNavigatorStackParamList>>(); 
+    const { navigate } = useNavigation<NavigationProp<ProfileNavigatorStackParamList>>();
     return (
         <View style={styles.container}>
             <AvatarField source={profile.avatar} />
@@ -24,11 +25,15 @@ const ProfileContainer: FC<Props> = ({ profile }) => {
                 <Text style={styles.title}>{profile.name}</Text>
                 <View style={styles.flexRow}>
                     <Text style={styles.email}>{profile.email}</Text>
-                    <MaterialIcons 
-                        name='verified'
-                         size={15} 
-                        color={colors.SECONDARY} 
-                    />
+                    {profile?.verified ?
+                        <MaterialIcons
+                            name='verified'
+                            size={15}
+                            color={colors.SECONDARY}
+                        /> :
+                        <Octicons
+                            name='unverified' />
+                    }
                 </View>
                 <View style={styles.flexRow}>
                     <Text style={styles.profileActionLink}>{profile.followers} Followers</Text>
@@ -36,9 +41,9 @@ const ProfileContainer: FC<Props> = ({ profile }) => {
                 </View>
             </View>
 
-            <Pressable 
+            <Pressable
                 style={styles.settingContainer}
-                onPress={()=> navigate('ProfileSettings')}
+                onPress={() => navigate('ProfileSettings')}
             >
                 <AntDesign name='setting' size={20} color={colors.CONTRAST} />
             </Pressable>
@@ -54,7 +59,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // justifyContent: 'center',
     },
-    infoContainer:{
+    infoContainer: {
         marginLeft: 7
     },
     title: {
@@ -67,23 +72,23 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginRight: 5
     },
-    flexRow:{
+    flexRow: {
         flexDirection: 'row',
         alignItems: 'center'
     },
-    profileActionLink:{
+    profileActionLink: {
         backgroundColor: colors.SECONDARY,
         color: colors.PRIMARY,
         paddingHorizontal: 4,
         paddingVertical: 2,
         margin: 5
     },
-    settingContainer:{
+    settingContainer: {
         width: 40,
         height: 40,
         alignItems: 'flex-end'
     }
-   
+
 
 });
 

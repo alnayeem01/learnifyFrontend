@@ -1,6 +1,6 @@
 
 
-interface NewUserRespones {
+export interface NewUserRespones {
     id: string;
     name: string;
     email: string;
@@ -21,4 +21,5 @@ export type AuthStackParamList = {
 export type ProfileNavigatorStackParamList = {
     Profile: undefined;
     ProfileSettings: undefined;
+      Verification: {userInfo: NewUserRespones};
 }
