@@ -14,7 +14,7 @@ const AuthNavigator = () => {
     // `useSelector` subscribes to the Redux store and re-renders the component
     // whenever the selected auth state changes.
     // const authState = useSelector(getAuthState);
-    // console.log(authState)
+
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SignIn" component={SignIn} />

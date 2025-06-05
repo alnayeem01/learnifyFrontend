@@ -6,10 +6,10 @@ import ProfileSettings from '../components/profile/ProfileSettings';
 import Verification from '../views/auth/Verification';
 import { ProfileNavigatorStackParamList } from '../@types/navigation';
 
-const Stack = createNativeStackNavigator<ProfileNavigatorStackParamList>();
-interface Props {
+const Stack = createNativeStackNavigator<ProfileNavigatorStackParamList>(); 
 
-}
+interface Props {}
+
 const ProfileNavigator: FC<Props> = props => {
     return (
         <Stack.Navigator

@@ -15,7 +15,6 @@ const FileSelector: FC<Props> = ({ icon, btnTitle, style, onSelect, options }) =
 
     //For picking doc from user device 
     const handleDocumentSelect = async () => {
-        console.log('clicked');
         try {
             const doc = await pick(options);
             // as the selected file will be inside an array

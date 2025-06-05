@@ -10,7 +10,7 @@ import { categories } from '../utils/Categories';
 import { DocumentPickerResponse, types } from '@react-native-documents/picker';
 import * as yup from 'yup'
 import client, { getClient } from '../api/client';
-import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
+
 import Progress from '../ui/Progress';
 import { mapRange } from '../utils/math';
 
@@ -198,7 +198,7 @@ const Upload: FC<Props> = props => {
 
         <View style={{ marginBottom: 20 }} />
 
-        {busy && <Progress style={{ marginBottom: 20 }} progress={uploadProg} />}
+        {busy ? <Progress style={{ marginBottom: 20 }} progress={uploadProg} /> : null}
 
 
 

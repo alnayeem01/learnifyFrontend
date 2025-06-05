@@ -49,7 +49,6 @@ const ProfileContainer: FC<Props> = ({ profile }) => {
             </Pressable>
         </View>
     )
-
 };
 
 const styles = StyleSheet.create({
@@ -88,8 +87,6 @@ const styles = StyleSheet.create({
         height: 40,
         alignItems: 'flex-end'
     }
-
-
 });
 
 export default ProfileContainer;

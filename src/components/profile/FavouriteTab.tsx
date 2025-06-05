@@ -12,19 +12,19 @@ interface Props{
 const FavouriteTab:FC<Props> = props => {
   const {data, isLoading} = useFetchFavourites()
   
-  //Loading ui for auiolistItem
-  if(isLoading)
-    return <AudioListLoadingUi items={8}/>
+
+  // if(isLoading){
+  //   return <AudioListLoadingUi />
+  // };
   
-  //if there is no data insdie we will show this in UI 
-  if(!data?.length)
-  return <EmptyRecords title="There is no audio's in favourite playlist." />
+  if(!data?.length){
+    return <EmptyRecords title="There is no audio's in favourite playlist." />
+  };
 
   return(
     <ScrollView style={styles.container}>
      {data?.map((item)=>{
       return (
-        //passing the audio to our component AudioListItem component 
         <AudioListItem key={item.id} audio={item} />
       )
      })}
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
       padding: 10
-    },
+    }
 });
 
 export default FavouriteTab;

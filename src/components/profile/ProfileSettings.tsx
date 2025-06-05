@@ -89,7 +89,7 @@ const ProfileSettings: FC<Props> = props => {
 
   //image Select
   const handleImageSelect = async ()=>{
-    console.log('here')
+
     try{
       const {path} = await ImagePicker.openPicker({
         cropping: false,

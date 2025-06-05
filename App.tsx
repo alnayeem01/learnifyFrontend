@@ -19,7 +19,7 @@ const App = () => {
         <AppContainer>
           <AppNavigator />
         </AppContainer>
-      </QueryClientProvider>v
+      </QueryClientProvider>
     </Provider>
   )
 }

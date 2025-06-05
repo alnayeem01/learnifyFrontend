@@ -44,7 +44,6 @@ const AppNavigator: FC<Props> = props => {
                 dispatch(updateBusyState(false))
                 dispatch(updateProfile(data.profile));
                 dispatch(updateLoggedInState(true))
-                console.log('Data from useEffect:', data)
             } catch (e) {
                 console.log(e)
             }
