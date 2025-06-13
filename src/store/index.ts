@@ -1,12 +1,13 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import authReducer from './auth';
 import notificationReducer from './notificaton';
-
+import playerReducer from './player';
 
 // This is how we combine reducer when we ahve ultiole reducers
 const reducer = combineReducers({
   auth : authReducer,
-  notification : notificationReducer
+  notification : notificationReducer,
+  player : playerReducer
 })
 
 // Creating the main Redux store using Redux Toolkit

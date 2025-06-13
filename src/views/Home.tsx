@@ -14,6 +14,7 @@ import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
 import TrackPlayer, { Track } from 'react-native-track-player';
+import useAudioController from '../../hooks/useAudioController';
 
 
 
@@ -24,7 +25,9 @@ const Home: FC<Props> = props => {
   const [showOptions, setShowOptions] = useState<boolean>(false)
   const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
   const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
-  const [selectedAudio, setSelectedAudio] = useState<AudioData>()
+  const [selectedAudio, setSelectedAudio] = useState<AudioData>();
+  //custom hook for audioControllers
+  const {onAudioPress} = useAudioController();
 
   const { data } = useFetchPlaylist()
   const dispatch = useDispatch()
@@ -107,32 +110,13 @@ const Home: FC<Props> = props => {
     <View style={styles.container}>
       <LatestUploads
         onAudioLongPress={handleOnLongPress}
-        onAudioPress={async (item, data) => {
-          //passing the Track object required by react native Track Player 
-          const localImage = require('../../assets/images/mic.png')
-          //there is an error when pasing local 
-          const lists: Track[] = data.map(item => {
-            return {
-              id: item.id,
-              url: item.file,
-              artwork: item?.poster?.url || localImage,
-              artist: item.owner.name,
-              title: item.title,
-              genre: item.category,
-              isLiveStream: true
-            }
-          });
-          //now here we will add these track to react-native-track-player
-          //spread operator to spread the lists object here inside the array 
-          // use trackPlayer to play the audio
-          await TrackPlayer.reset();//reset the queque
-          await TrackPlayer.add([...lists]);
-          await TrackPlayer.play();
-        }}
+        onAudioPress={onAudioPress}
+        //passing the hook : The Data fetched in LatestAudion will use the controller.
       />
       <RecommendedAudios
         onAudioLongPress={handleOnLongPress}
-        onAudioPress={(item) => console.log('Hellp')}
+        onAudioPress={onAudioPress}
+        //passing the hook : The Data fetched in LatestAudion will use the controller.
       />
       <OptionsModal
         visible={showOptions}
@@ -179,7 +163,7 @@ const Home: FC<Props> = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10
+    padding: 10,
   },
   optionContainer: {
     flexDirection: 'row',
