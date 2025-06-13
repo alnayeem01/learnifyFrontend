@@ -62,7 +62,6 @@ const Upload: FC<Props> = props => {
   const handleUpload = async () => {
     try {
       setBusy(true)
-      console.log('clicked')
       //this validate functin  yup
       const finalData = await audioInfoSchema.validate(audioInfo);
 
@@ -106,11 +105,7 @@ const Upload: FC<Props> = props => {
         },
       });
       setBusy(false)
-      console.log("The podcast is uploaded: ", data);
     } catch (error: any) {
-      if (error instanceof yup.ValidationError)
-        console.log('Validation error: ', error.message);
-      else console.log(error.response.data);
     }
     setBusy(false)
   };

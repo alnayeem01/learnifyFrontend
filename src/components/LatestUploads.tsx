@@ -18,6 +18,7 @@ const dummyData = new Array(4).fill("")
 const LatestUploads: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
 
     const { data, isLoading } = useFetchLatestAudios();
+
     if(isLoading)
     return (
         <PulseAnimationContainer>

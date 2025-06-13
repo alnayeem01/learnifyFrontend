@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { StyleSheet, Text, ScrollView, Pressable, View } from 'react-native'
 import { useFetchPlaylist } from '../../hooks/query';
 import LatestUploads from '../components/LatestUploads';
@@ -7,90 +7,128 @@ import OptionsModal from '../components/OptionsModal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../utils/colors';
 import { AudioData, PlayList } from '../@types/audio';
-import client, { getClient } from '../api/client';
-import { getFromAsyncStorage, keys } from '../utils/asyncStorage';
+import { getClient } from '../api/client';
 import catchAsyncError from '../api/catchError';
 import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
+import TrackPlayer, { Track } from 'react-native-track-player';
 
 
 
-interface Props {
-
-}
+interface Props { }
 
 const Home: FC<Props> = props => {
 
   const [showOptions, setShowOptions] = useState<boolean>(false)
   const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
-   const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
+  const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
   const [selectedAudio, setSelectedAudio] = useState<AudioData>()
 
-  const {data}  = useFetchPlaylist()
+  const { data } = useFetchPlaylist()
   const dispatch = useDispatch()
-  const handleOnFavPress = async ()=>{
-    if(!selectedAudio) return;
+  const handleOnFavPress = async () => {
+    if (!selectedAudio) return;
     //send request with the audio id that we want to add to the favourite playlist 
-    try{
+    try {
       const client = await getClient()
-      const {data} = await client.post('/favourite?audioId=' + selectedAudio.id,null);
-    }catch(e){
-        const errorMessage = catchAsyncError(e);
-        dispatch(updateNotification({ message: errorMessage, type: 'error' }));
+      const { data } = await client.post('/favourite?audioId=' + selectedAudio.id, null);
+    } catch (e) {
+      const errorMessage = catchAsyncError(e);
+      dispatch(updateNotification({ message: errorMessage, type: 'error' }));
     }
-     //once added in fav reset the state 
-      setSelectedAudio(undefined)
-      //close the modal
-      setShowOptions(false);
+    //once added in fav reset the state 
+    setSelectedAudio(undefined)
+    //close the modal
+    setShowOptions(false);
   };
-  const handleOnLongPress =(audio: AudioData)=>{
+  const handleOnLongPress = (audio: AudioData) => {
     setSelectedAudio(audio);
     setShowOptions(true);
   };
 
-  const handleOnAddToPlaylist =()=>{
+  const handleOnAddToPlaylist = () => {
     setShowPlaylistModal(true);
     setShowOptions(false)
   };
 
-  const handlePlaylistSubmit =async (value: PlayListInfo)=>{
-    try{
-      if(!value.title.trim()) return;
+  const handlePlaylistSubmit = async (value: PlayListInfo) => {
+    try {
+      if (!value.title.trim()) return;
       const client = await getClient();
-      const {data} = await client.post('playlist/create',{
+      const { data } = await client.post('playlist/create', {
         resId: selectedAudio?.id,
         title: value.title,
         visibility: value.private ? 'private' : 'public'
       })
-    }catch(e){
-      console.log(catchAsyncError(e))
+    } catch (e) {
+
     }
   }
 
-  const updatePlayList = async (item: PlayList)=>{
-      try{
-        const client = await getClient()
-        const {data} = await client.patch('/playlist/update',{
-          id: item.id,
-          item : selectedAudio?.id,
-          title: item.title,
-          visibility: item.visibility
-        },);
-        setSelectedAudio(undefined);
-        setShowPlaylistModal(false)
-        dispatch(updateNotification({type: 'success', message: 'Playlist Updated'}))
-      }catch(e){
-        console.log(e)
-      }
+  const updatePlayList = async (item: PlayList) => {
+    try {
+      const client = await getClient()
+      const { data } = await client.patch('/playlist/update', {
+        id: item.id,
+        item: selectedAudio?.id,
+        title: item.title,
+        visibility: item.visibility
+      },);
+      setSelectedAudio(undefined);
+      setShowPlaylistModal(false)
+      dispatch(updateNotification({ type: 'success', message: 'Playlist Updated' }))
+    } catch (e) {
+
+    }
   }
+
+  //track  Player 
+  useEffect(() => {
+    /**
+     * Initializes the TrackPlayer instance asynchronously.
+     * 
+     * This function sets up the audio player by calling `TrackPlayer.setupPlayer()`.
+     * It should be called before attempting to use any playback features to ensure
+     * the player is properly initialized and ready for use.
+     *
+     * @returns {Promise<void>} A promise that resolves when the player is set up.
+     */
+    const setupPlayer = async () => {
+      await TrackPlayer.setupPlayer();
+    };
+    setupPlayer();
+  }, []);
+
+
 
   return (
     <View style={styles.container}>
       <LatestUploads
-        onAudioLongPress={ handleOnLongPress}
-        onAudioPress={() => console.log('object')}
+        onAudioLongPress={handleOnLongPress}
+        onAudioPress={async (item, data) => {
+          //passing the Track object required by react native Track Player 
+          const localImage = require('../../assets/images/mic.png')
+          //there is an error when pasing local 
+          const lists: Track[] = data.map(item => {
+            return {
+              id: item.id,
+              url: item.file,
+              artwork: item?.poster?.url || localImage,
+              artist: item.owner.name,
+              title: item.title,
+              genre: item.category,
+              isLiveStream: true
+            }
+          });
+          //now here we will add these track to react-native-track-player
+          //spread operator to spread the lists object here inside the array 
+          // use trackPlayer to play the audio
+          await TrackPlayer.reset();//reset the queque
+          await TrackPlayer.add([...lists]);
+          await TrackPlayer.play();
+        }}
       />
       <RecommendedAudios
         onAudioLongPress={handleOnLongPress}
@@ -102,34 +140,35 @@ const Home: FC<Props> = props => {
           setShowOptions(false)
         }}
         options={[
-          { title: 'Add to Playlist', icon: 'playlist-music', onPress:handleOnAddToPlaylist},
-          { title: 'Add to favourite', icon: 'cards-heart',  onPress: handleOnFavPress },
+          { title: 'Add to Playlist', icon: 'playlist-music', onPress: handleOnAddToPlaylist },
+          { title: 'Add to favourite', icon: 'cards-heart', onPress: handleOnFavPress },
         ]}
         renderItem={(item: any) => {
           return (
-              <Pressable 
+            <Pressable
               style={styles.optionContainer}
               onPress={item.onPress}
-              >
-                <MaterialCommunityIcons size={24} name={item.icon} color={colors.PRIMARY} />
-                <Text style={styles.optionTitle}>{item.title}</Text>
-              </Pressable>
+            >
+              <MaterialCommunityIcons size={24} name={item.icon} color={colors.PRIMARY} />
+              <Text style={styles.optionTitle}>{item.title}</Text>
+            </Pressable>
           )
         }}
       />
-      <PlaylistModal 
+      <PlaylistModal
         onPlayListPress={updatePlayList}
-        visible={showPlaylistModal} 
+        visible={showPlaylistModal}
         onRequestClose={() => {
-        setShowPlaylistModal(false);}} 
-        list={data ||[]} 
-        onCreateNewPress={()=>{
+          setShowPlaylistModal(false);
+        }}
+        list={data || []}
+        onCreateNewPress={() => {
           setShowPlaylistModal(false);
           setShowPlayListFormModal(true)
-        }} 
+        }}
       />
-      <PlaylistForm 
-        visible={showPlayListFormModal} 
+      <PlaylistForm
+        visible={showPlayListFormModal}
         onRequestClose={() => setShowPlayListFormModal(false)}
         onSubmit={handlePlaylistSubmit}
       />
@@ -142,14 +181,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10
   },
-  optionContainer:{ 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  optionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10
   },
-  optionTitle:{
-    color: colors.PRIMARY, 
-    fontSize: 16, 
+  optionTitle: {
+    color: colors.PRIMARY,
+    fontSize: 16,
     marginLeft: 5
   }
 });

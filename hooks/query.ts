@@ -55,6 +55,7 @@ export const useFetchRecommendedAudios = () =>{
 const fetchPlaylist = async (): Promise<PlayList[]> =>{
   const client = await getClient()
   const {data} = await client.get('/playlist/by-profile')
+  console.log(data)
   return data.playlist
 }
 

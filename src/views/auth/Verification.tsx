@@ -50,7 +50,6 @@ const Verification: FC<Props> = (props) => {
         navigation.navigate("ProfileSettings")
       };
     } catch (e) {
-      console.log(e)
     }
     setbusy(false)
 

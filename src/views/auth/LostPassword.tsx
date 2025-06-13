@@ -35,12 +35,10 @@ const initialValues = {
 //hanldePassword 
 const handlePasswordResetLink = async (values: { email: string }, actions: FormikHelpers<{ email: string }>) => {
   actions.setSubmitting(true)
-  console.log(values.email)
   try {
     const { data } = await client.post('/auth/forget-password', { email: values.email })
 
   } catch (e) {
-    console.log(e)
   }
   actions.setSubmitting(false)
 }
@@ -52,12 +50,10 @@ const LostPassword: FC<Props> = props => {
 
   const handlePasswordResetLink = async (values: { email: string }, actions: FormikHelpers<{ email: string }>) => {
     actions.setSubmitting(true)
-    console.log(values.email)
     try {
       const { data } = await client.post('/auth/forget-password', { email: values.email })
 
     } catch (e) {
-      console.log(e)
     }
     actions.setSubmitting(false)
   }

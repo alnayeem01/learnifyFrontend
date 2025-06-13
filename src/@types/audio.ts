@@ -20,7 +20,10 @@ export interface AudioData {
     about: string;
     category: categoriesTypes;
     file: string;
-    poster?: string | undefined;
+    poster?: {
+        url : string,
+        id: string
+    },
     owner: {
         name: string;
         id: string;
