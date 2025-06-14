@@ -2,23 +2,24 @@ import React, { FC, useState } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
-  Button,
   Platform,
   StatusBar,
-  Image,
-  Text,
 } from 'react-native';
 import colors from '../../utils/colors';
 import AuthInputField from '../../components/form/AuthInputField';
 import * as yup from 'yup';
 import Form from '../../components/form/index';
 import SubmitBtn from '../../components/form/SubmitBtn';
-import Icon from 'react-native-vector-icons/AntDesign'
 import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
 import AppLink from '../../ui/AppLink';
-import CircleUI from '../../ui/CircleUI';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import client from '../../api/client';
+import catchAsyncError from '../../api/catchError';
+import { useDispatch } from 'react-redux';
+import { updateNotification } from '../../store/notificaton';
 
 interface Props { }
 
@@ -45,6 +46,13 @@ const signUpValidation = yup.object({
     .required('Password is Required!'),
 });
 
+interface newUser {
+  name: string;
+  email: string;
+  password: string;
+};
+
+
 const initialValues = {
   name: '',
   email: '',
@@ -53,21 +61,43 @@ const initialValues = {
 
 const SignUp: FC<Props> = props => {
 
+  //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
+  const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+
+  const dispatch = useDispatch()
 
   const togglePassword = () => {
     setSecureTextEntry(!secureTextEntry)
   };
 
+  const handleSubmit = async (values: newUser, actions: FormikHelpers<newUser>) => {
+    // send user data to server
+    actions.setSubmitting(true)
+    try {
+      // fix up from stackOverflow as loaclhost endpoint won't work here 
+      const { data } = await client.post('/auth/create', {
+        ...values
+      });
+
+      navigation.navigate("Verification", {
+        userInfo: data.User,
+      })
+    } catch (error) {
+        const errorMessage = catchAsyncError(error)
+        dispatch(updateNotification({message: errorMessage, type:'error'} ))
+    }
+    actions.setSubmitting(false)
+  }
+
   return (
-      <Form
-        initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
-        validationSchema={signUpValidation}>
-        <AuthFormContainer title={'Welcome'} subTitle={`Let's get started by creating your account!`} >
-          <View style={styles.formContainer}>
+    <Form
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={signUpValidation}>
+      <AuthFormContainer title={'Welcome'} subTitle={`Let's get started by creating your account!`} >
+        <View style={styles.formContainer}>
           <AuthInputField
             name="name"
             label="Name"
@@ -92,12 +122,16 @@ const SignUp: FC<Props> = props => {
           <SubmitBtn title={'Sign Up'} />
 
           <View style={styles.linkContainer}>
-            <AppLink title='I Lost my Password!' />
-            <AppLink title='Sign in ' />
+            <AppLink title='I Lost my Password!' onPress={() => {
+              navigation.navigate("SignUp")
+            }} />
+            <AppLink title='Sign in' onPress={() => {
+              navigation.navigate("SignIn")
+            }} />
           </View>
-          </View>
-        </AuthFormContainer>
-      </Form>
+        </View>
+      </AuthFormContainer>
+    </Form>
 
   );
 };
@@ -133,16 +167,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: "center"
   },
-  headingContainer:{
+  headingContainer: {
     alignItems: "center",
     gap: 10
   },
-  headinText:{
+  headinText: {
     fontSize: 26,
     fontWeight: "bold",
     color: colors.SECONDARY,
   },
-  headinTextTitle:{
+  headinTextTitle: {
     fontSize: 14,
     color: colors.CONTRAST,
   }

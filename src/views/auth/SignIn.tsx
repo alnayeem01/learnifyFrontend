@@ -13,6 +13,13 @@ import SubmitBtn from '../../components/form/SubmitBtn';
 import PasswordVisibilityIcon from '../../ui/PasswordVisibilityIcon';
 import AppLink from '../../ui/AppLink';
 import AuthFormContainer from '../../components/form/AuthFormContainer';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import client from '../../api/client';
+import { getAuthState, updateLoggedInState, updateProfile } from '../../store/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { keys, saveToAsyncStorage } from '../../utils/asyncStorage';
 
 interface Props { }
 
@@ -29,29 +36,53 @@ const signInValidation = yup.object({
     .min(8, 'Password must be 8 characters long!')
     .required('Password is Required!'),
 });
+interface User {
+  email: string,
+  password: string,
+};
 
 const initialValues = {
   email: '',
   password: '',
 };
 
+
+
 const SignIn: FC<Props> = props => {
 
+  //to resolve type issues we are providing genreric type of auth stack and also providing the type NavigationProp from react navigation
+  const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
+
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+  const dispatch = useDispatch()
 
   const togglePassword = () => {
     setSecureTextEntry(!secureTextEntry)
   };
+  const handleSubmit = async (values: User, actions: FormikHelpers<User>) => {
+    actions.setSubmitting(true)
+    try {
+      const res = await client.post('/auth/sign-in', {
+        ...values
+      })
+
+      await saveToAsyncStorage(keys.Auth_TOKEN, res.data.token)
+      // This line updates the Redux store with the logged-in user's profile data
+      // It dispatches the `updateProfile` action with the user object from the API response
+      dispatch(updateProfile(res.data.profile));
+      dispatch(updateLoggedInState(true))
+    } catch (e) {
+    }
+    actions.setSubmitting(false)
+  }
 
   return (
-      <Form
-        initialValues={initialValues}
-        onSubmit={values => {
-          console.log(values);
-        }}
-        validationSchema={signInValidation}>
-        <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
-          <View style={styles.formContainer}>
+    <Form
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={signInValidation}>
+      <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
+        <View style={styles.formContainer}>
           <AuthInputField
             name="email"
             label="Email"
@@ -71,12 +102,16 @@ const SignIn: FC<Props> = props => {
           <SubmitBtn title={'Sign in'} />
 
           <View style={styles.linkContainer}>
-            <AppLink title='I Lost my Password!' />
-            <AppLink title='Sign Up  ' />
+            <AppLink title='I Lost my Password!' onPress={() => {
+              navigatation.navigate("LostPassword")
+            }} />
+            <AppLink title='Sign Up' onPress={() => {
+              navigatation.navigate("SignUp")
+            }} />
           </View>
-          </View>
-        </AuthFormContainer>
-      </Form>
+        </View>
+      </AuthFormContainer>
+    </Form>
 
   );
 };
@@ -112,16 +147,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: "center"
   },
-  headingContainer:{
+  headingContainer: {
     alignItems: "center",
     gap: 10
   },
-  headinText:{
+  headinText: {
     fontSize: 26,
     fontWeight: "bold",
     color: colors.SECONDARY,
   },
-  headinTextTitle:{
+  headinTextTitle: {
     fontSize: 14,
     color: colors.CONTRAST,
   }
