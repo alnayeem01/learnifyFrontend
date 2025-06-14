@@ -36,10 +36,10 @@ const AppModal: FC<Props> = ({ children, animation, onRequestClose, visible }) =
         translateY.value = e.translationY
     }).onFinalize((e)=>{
         if(e.translationY <= modalHeight/2) translateY.value = 0 
-        else translateY.value = modalHeight
+        else {translateY.value = modalHeight
         // here we will close the modal
         /// runOnJS : here to pass js code in native funcion we have to use runOnJS function from gestureHandler
-        runOnJS(onRequestClose)()
+        runOnJS(onRequestClose)()}
     });
     useEffect(()=>{
         if(visible)
@@ -47,9 +47,9 @@ const AppModal: FC<Props> = ({ children, animation, onRequestClose, visible }) =
     }, [visible, animation]);
             //transparent : it makes things underneath modal visible
     return <Modal onRequestClose={onRequestClose} transparent visible={visible}>
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{flex:1}}>
             {/* This pressable works as the backdrop for closing */}
-            <Pressable onResponderEnd={onRequestClose} style={styles.backdrop} />
+            <Pressable onPress={onRequestClose} style={styles.backdrop} />
             {/* Modal : this view will contaisn actual contect of the modal  */}
             <GestureDetector gesture={gesture}>
                 <Animated.View style={[styles.modal, translateStyle]} >
@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         borderTopEndRadius: 10,
-        borderTopStartRadius: 10
+        borderTopStartRadius: 10,
+        overflow: 'hidden'
     }
 });
 

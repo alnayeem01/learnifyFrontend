@@ -1,9 +1,10 @@
 
-import TrackPlayer, { State, Track, usePlaybackState } from "react-native-track-player"
+import TrackPlayer, { State, Track, usePlaybackState, useProgress } from "react-native-track-player"
 import { AudioData } from "../src/@types/audio"
 import { useDispatch, useSelector } from "react-redux";
 import { getPlayerState, updateOnGoingAudio, updateOnGoingList } from "../src/store/player";
 import deepEqual from "deep-equal";
+import { getPosition } from "react-native-track-player/lib/src/trackPlayer";
 
 const updateQueue = async (data: AudioData[]) => {
     //passing the Track object required by react native Track Player 
@@ -32,6 +33,7 @@ const useAudioController = () => {
     const { onGoingAudio, onGoingList } = useSelector(getPlayerState); //from redux store
     const dispatch = useDispatch();
     const isReady = playbackState !== State.None;
+    console.log(isReady)
     const isPlaying = playbackState === State.Playing;
      const isPaused = playbackState === State.Paused;
      const isBusy = playbackState === State.Buffering || playbackState === State.Loading
@@ -93,8 +95,20 @@ const useAudioController = () => {
         if(isPaused) await TrackPlayer.play()
     };
 
+    //seek
+    const seekTO = async (position : number) =>{
+        await TrackPlayer.seekTo(position)
+    };
+
+     //skip
+    const skipTo = async (sec : number) =>{
+       const currentPosition = await TrackPlayer.getProgress().then((progress) => progress.position)
+        await TrackPlayer.seekTo(currentPosition + sec)
+    };
+    
+
     //by returning from an object it can be used by destructuring
-    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy }
+    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy, seekTO, skipTo }
 };
 
 export default useAudioController;

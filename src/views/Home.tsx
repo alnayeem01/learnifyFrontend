@@ -13,10 +13,10 @@ import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
-import TrackPlayer, { Track } from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import useAudioController from '../../hooks/useAudioController';
 import AppView from '../components/AppView';
-import AppModal from '../ui/AppModal';
+
 
 
 
@@ -24,7 +24,6 @@ interface Props { }
 
 const Home: FC<Props> = props => {
 
-  const [show, setShow] = useState(false)
 
   const [showOptions, setShowOptions] = useState<boolean>(false)
   const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
@@ -159,13 +158,7 @@ const Home: FC<Props> = props => {
           onRequestClose={() => setShowPlayListFormModal(false)}
           onSubmit={handlePlaylistSubmit}
         />
-        <Button title='Open' onPress={()=>setShow(true)} />
       </ScrollView>
-      <AppModal animation visible={show} onRequestClose={()=> setShow(false)}>
-        <View>
-
-        </View>
-      </AppModal>
     </AppView>
   )
 };

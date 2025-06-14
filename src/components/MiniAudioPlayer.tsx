@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { View, StyleSheet, Image, Text, Pressable, ActivityIndicator } from 'react-native'
 import colors from '../utils/colors';
 import { useSelector } from 'react-redux';
@@ -9,19 +9,29 @@ import useAudioController from '../../hooks/useAudioController';
 import Loader from '../ui/Loader';
 import { useProgress } from 'react-native-track-player';
 import { mapRange } from '../utils/math';
+import AudioPlayer from '../ui/AudioPlayer';
 
 
 interface Props {
-
+ 
 }
 
 export const MiniPlayerHeight = 60
 const MiniAudioPlayer: FC<Props> = props => {
+    const [playerVisibility, setPlayerVisibiilty] = useState(false);
     const { onGoingAudio } = useSelector(getPlayerState);
     const {isPlaying, togglePlayPause, isBusy} = useAudioController();
     // useProgress hook from react-native-track-player 
     const progress = useProgress()
     const source = onGoingAudio?.poster?.url ? { uri: onGoingAudio.poster?.url } : require('../../assets/images/music.jpg')
+    
+     const showPlayerModal =()=>{
+        setPlayerVisibiilty(true)
+    };
+
+    const closePlayerModal =()=>{
+        setPlayerVisibiilty(false)
+    };
     return (
         <>
         <View style={{
@@ -39,10 +49,10 @@ const MiniAudioPlayer: FC<Props> = props => {
             <View>
                 <Image source={source} style={styles.poster} />
             </View>
-            <View style={styles.contentContainer}>
+            <Pressable onPress={showPlayerModal}  style={styles.contentContainer}>
                 <Text style={styles.title}>{onGoingAudio?.title}</Text>
                 <Text style={styles.owner}>{onGoingAudio?.owner.name}</Text>
-            </View>
+            </Pressable>
             <Pressable style={{ paddingHorizontal: 10 }}>
                 <AntDesign name='hearto' size={24} color={colors.CONTRAST} />
             </Pressable>
@@ -54,6 +64,7 @@ const MiniAudioPlayer: FC<Props> = props => {
             <Loader />
         }
         </View>
+        <AudioPlayer visible={playerVisibility}  onRequestClose={closePlayerModal} />
         </>
     )
 };

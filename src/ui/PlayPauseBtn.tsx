@@ -7,14 +7,14 @@ import colors from '../utils/colors';
 interface Props {
     color?: string;
     playing?: boolean
-    onPress(): void
+    onPress?(): void
 }
 const PlayPauseBtn: FC<Props> = ({color = colors.CONTRAST, playing, onPress}) => {
     return <View style={styles.button}>
         <Pressable style={{ paddingHorizontal: 10 }} onPress={onPress}>
             {playing ?  
-                <AntDesign name='pause' size={24} color={colors.CONTRAST} /> : 
-                <AntDesign name='caretright' size={24} color={colors.CONTRAST} />
+                <AntDesign name='pause' size={24} color={color} /> : 
+                <AntDesign name='caretright' size={24} color={color} />
             } 
             
         </Pressable>
