@@ -4,7 +4,7 @@ import store from './src/store'
 import AppNavigator from './src/navigation'
 import AppContainer from './src/components/AppContainer'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Create a client for query
 const queryClient = new QueryClient()
@@ -16,9 +16,11 @@ const App = () => {
     <Provider store={store}>
       {/* This is the provide for tanstack/react-query */}
       <QueryClientProvider client={queryClient}>
-        <AppContainer>
-          <AppNavigator />
-        </AppContainer>
+        <GestureHandlerRootView>
+          <AppContainer>
+            <AppNavigator />
+          </AppContainer>
+        </GestureHandlerRootView>
       </QueryClientProvider>
     </Provider>
   )
