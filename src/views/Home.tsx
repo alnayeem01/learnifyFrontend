@@ -15,6 +15,7 @@ import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import useAudioController from '../../hooks/useAudioController';
+import AppView from '../components/AppView';
 
 
 
@@ -105,62 +106,63 @@ const Home: FC<Props> = props => {
   }, []);
   
   return (
-    <View style={styles.container}>
-      <LatestUploads
-        onAudioLongPress={handleOnLongPress}
-        onAudioPress={onAudioPress}
-        //passing the hook : The Data fetched in LatestAudion will use the controller.
-      />
-      <RecommendedAudios
-        onAudioLongPress={handleOnLongPress}
-        onAudioPress={onAudioPress}
-        //passing the hook : The Data fetched in LatestAudion will use the controller.
-      />
-      <OptionsModal
-        visible={showOptions}
-        onRequestClose={() => {
-          setShowOptions(false)
-        }}
-        options={[
-          { title: 'Add to Playlist', icon: 'playlist-music', onPress: handleOnAddToPlaylist },
-          { title: 'Add to favourite', icon: 'cards-heart', onPress: handleOnFavPress },
-        ]}
-        renderItem={(item: any) => {
-          return (
-            <Pressable
-              style={styles.optionContainer}
-              onPress={item.onPress}
-            >
-              <MaterialCommunityIcons size={24} name={item.icon} color={colors.PRIMARY} />
-              <Text style={styles.optionTitle}>{item.title}</Text>
-            </Pressable>
-          )
-        }}
-      />
-      <PlaylistModal
-        onPlayListPress={updatePlayList}
-        visible={showPlaylistModal}
-        onRequestClose={() => {
-          setShowPlaylistModal(false);
-        }}
-        list={data || []}
-        onCreateNewPress={() => {
-          setShowPlaylistModal(false);
-          setShowPlayListFormModal(true)
-        }}
-      />
-      <PlaylistForm
-        visible={showPlayListFormModal}
-        onRequestClose={() => setShowPlayListFormModal(false)}
-        onSubmit={handlePlaylistSubmit}
-      />
-    </View>
+    <AppView>
+      <ScrollView contentContainerStyle={styles.container}>
+        <LatestUploads
+          onAudioLongPress={handleOnLongPress}
+          onAudioPress={onAudioPress}
+          //passing the hook : The Data fetched in LatestAudion will use the controller.
+        />
+        <RecommendedAudios
+          onAudioLongPress={handleOnLongPress}
+          onAudioPress={onAudioPress}
+          //passing the hook : The Data fetched in LatestAudion will use the controller.
+        />
+        <OptionsModal
+          visible={showOptions}
+          onRequestClose={() => {
+            setShowOptions(false)
+          }}
+          options={[
+            { title: 'Add to Playlist', icon: 'playlist-music', onPress: handleOnAddToPlaylist },
+            { title: 'Add to favourite', icon: 'cards-heart', onPress: handleOnFavPress },
+          ]}
+          renderItem={(item: any) => {
+            return (
+              <Pressable
+                style={styles.optionContainer}
+                onPress={item.onPress}
+              >
+                <MaterialCommunityIcons size={24} name={item.icon} color={colors.PRIMARY} />
+                <Text style={styles.optionTitle}>{item.title}</Text>
+              </Pressable>
+            )
+          }}
+        />
+        <PlaylistModal
+          onPlayListPress={updatePlayList}
+          visible={showPlaylistModal}
+          onRequestClose={() => {
+            setShowPlaylistModal(false);
+          }}
+          list={data || []}
+          onCreateNewPress={() => {
+            setShowPlaylistModal(false);
+            setShowPlayListFormModal(true)
+          }}
+        />
+        <PlaylistForm
+          visible={showPlayListFormModal}
+          onRequestClose={() => setShowPlayListFormModal(false)}
+          onSubmit={handlePlaylistSubmit}
+        />
+      </ScrollView>
+    </AppView>
   )
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 10,
   },
   optionContainer: {

@@ -31,7 +31,10 @@ const useAudioController = () => {
     const { state: playbackState } = usePlaybackState() as { state?: State };
     const { onGoingAudio, onGoingList } = useSelector(getPlayerState); //from redux store
     const dispatch = useDispatch();
-    const isReady = playbackState !== State.None
+    const isReady = playbackState !== State.None;
+    const isPlaying = playbackState === State.Playing;
+     const isPaused = playbackState === State.Paused
+     ;
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
 
         if (!isReady) {
@@ -74,8 +77,23 @@ const useAudioController = () => {
             dispatch(updateOnGoingAudio(item))
         }
     };
+
+    /**
+     * Toggles the playback state of the audio player.
+     *
+     * If audio is currently playing, this function pauses playback.
+     * If audio is currently paused, this function resumes playback.
+     *
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the playback state has been toggled.
+     */
+    const togglePlayPause = async()=>{
+        if(isPlaying) await TrackPlayer.pause();
+        if(isPaused) await TrackPlayer.play()
+    };
+
     //by returning from an object it can be used by destructuring
-    return { onAudioPress }
+    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause }
 };
 
 export default useAudioController;
