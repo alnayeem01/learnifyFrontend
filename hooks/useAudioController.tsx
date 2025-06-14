@@ -33,7 +33,8 @@ const useAudioController = () => {
     const dispatch = useDispatch();
     const isReady = playbackState !== State.None;
     const isPlaying = playbackState === State.Playing;
-     const isPaused = playbackState === State.Paused
+     const isPaused = playbackState === State.Paused;
+     const isBusy = playbackState === State.Buffering || playbackState === State.Loading
      ;
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
 
@@ -93,7 +94,7 @@ const useAudioController = () => {
     };
 
     //by returning from an object it can be used by destructuring
-    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause }
+    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy }
 };
 
 export default useAudioController;
