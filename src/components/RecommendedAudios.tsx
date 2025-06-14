@@ -1,10 +1,12 @@
 import React, { FC } from 'react'
-import { View, StyleSheet, Text, Image, Pressable } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
 import { useFetchRecommendedAudios } from '../../hooks/query';
 import colors from '../utils/colors';
 import GridView from './ui/GridView';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
-import { AudioData } from '../@types/audio';
+import AudioCard from './ui/AudioCard';
+import { useSelector } from 'react-redux';
+import { getPlayerState } from '../store/player';
 
 
 interface Props {
@@ -16,7 +18,7 @@ const dummyData = new Array(6).fill("")
 
 const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
     const { data, isLoading } = useFetchRecommendedAudios()
-
+    const { onGoingAudio } = useSelector(getPlayerState)
     if (isLoading)
         return (
             <PulseAnimationContainer>
@@ -45,22 +47,13 @@ const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
             data={(data || []).slice(0, 6)}
             renderItem={(item) => {
                 return (
-                    <Pressable
+                    <AudioCard
+                        title={item.title}
+                        poster={item.poster?.url}
                         onLongPress={() => onAudioLongPress(item, data)}
                         onPress={() => onAudioPress(item, data)}
-                        style={{ padding: 10 }}>
-                        <Image
-                            source={item.poster ? { uri: item.poster } : require('../../assets/images/music.jpg')}
-                            style={styles.image}
-                        />
-                        <Text
-                            ellipsizeMode='tail'
-                            numberOfLines={2}
-                            style={styles.title}
-                        >
-                            {item?.title}
-                        </Text>
-                    </Pressable>
+                        playing={onGoingAudio?.id === item.id}
+                    />
                 )
             }} />
     </View>

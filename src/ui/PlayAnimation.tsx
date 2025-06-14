@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         gap: 5
     },
-
 });
 
 export default PlayAnimation;

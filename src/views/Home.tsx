@@ -103,9 +103,7 @@ const Home: FC<Props> = props => {
     };
     setupPlayer();
   }, []);
-
-
-
+  
   return (
     <View style={styles.container}>
       <LatestUploads
