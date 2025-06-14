@@ -5,6 +5,8 @@ import PulseAnimationContainer from '../ui/PulseAnimationContainer';
 import colors from '../utils/colors';
 import AudioCard from './ui/AudioCard';
 import { AudioData } from '../@types/audio';
+import { useSelector } from 'react-redux';
+import { getPlayerState } from '../store/player';
 
 
 
@@ -13,10 +15,11 @@ interface Props {
     onAudioLongPress(item: AudioData, data: AudioData[]) : void
 }
 
-const dummyData = new Array(4).fill("")
+const dummyData = new Array(4).fill("");
 
 const LatestUploads: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
-
+    
+    const {onGoingAudio} = useSelector(getPlayerState);
     const { data, isLoading } = useFetchLatestAudios();
 
     if(isLoading)
@@ -48,6 +51,7 @@ const LatestUploads: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
                             key={item.id} 
                             title={item.title} 
                             poster={item.poster?.url} 
+                            playing = {item.id  === onGoingAudio?.id }
                         />
                     )
                 })}
