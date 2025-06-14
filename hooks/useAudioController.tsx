@@ -106,9 +106,30 @@ const useAudioController = () => {
         await TrackPlayer.seekTo(currentPosition + sec)
     };
     
+    //next button
+    const onNextPress =async()=>{
+        const currentList = await TrackPlayer.getQueue();
+        const currentIndex = await TrackPlayer.getActiveTrackIndex()
+        // return if: index ==last audio or null or undefined
+        if(currentIndex === null || currentIndex === undefined ||currentIndex >= currentList.length -1) return;
+        await TrackPlayer.skipToNext()
+        //Update OnGoingAudio
+        dispatch(updateOnGoingAudio(onGoingList[currentIndex+1]))
+    };
+    //next button
+    const onPreviousPress =async()=>{
+        const currentList = await TrackPlayer.getQueue();
+        const currentIndex = await TrackPlayer.getActiveTrackIndex()
+        // return if: index ==first audio or null or undefined
+        if(currentIndex === undefined || currentIndex <= 0) return;
+        await TrackPlayer.skipToPrevious()
+        //Update OnGoingAudio
+        dispatch(updateOnGoingAudio(onGoingList[currentIndex-1]))
+    }
 
     //by returning from an object it can be used by destructuring
-    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy, seekTO, skipTo }
+    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy, seekTO, skipTo, onNextPress, onPreviousPress }
+    
 };
 
 export default useAudioController;
