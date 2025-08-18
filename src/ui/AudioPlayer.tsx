@@ -28,8 +28,8 @@ const formattedDuration = (duration = 0) => {
 };
 
 const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
-    const { onGoingAudio  } = useSelector(getPlayerState)
-    const {skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress} = useAudioController()
+    const { onGoingAudio } = useSelector(getPlayerState)
+    const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress } = useAudioController()
     //dynamic image source 
     const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
     //audio progress from react-native-track-player
@@ -63,15 +63,15 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                         <AntDesign name='stepbackward' size={24} color={colors.CONTRAST} />
                     </PlayerController>
                     {/* go back 5 sec */}
-                    <PlayerController onPress={()=> skipTo(-5)} ignoreContainer={true}>
+                    <PlayerController onPress={() => skipTo(-5)} ignoreContainer={true}>
                         <FontAwesome name='rotate-left' size={20} color={colors.CONTRAST} />
                     </PlayerController>
                     {/* play and pause */}
                     <PlayerController>
-                       {isBusy ? <Loader color={colors.PRIMARY} />:<PlayPauseBtn playing={isPlaying} onPress={togglePlayPause} color={colors.PRIMARY} /> }
+                        {isBusy ? <Loader color={colors.PRIMARY} /> : <PlayPauseBtn playing={isPlaying} onPress={togglePlayPause} color={colors.PRIMARY} />}
                     </PlayerController>
                     {/* skip forward 5 sec */}
-                    <PlayerController ignoreContainer={true} onPress={()=> skipTo(5)}  >
+                    <PlayerController ignoreContainer={true} onPress={() => skipTo(5)}  >
                         <FontAwesome name='rotate-right' size={20} color={colors.CONTRAST} />
                     </PlayerController>
                     {/* next */}
@@ -79,9 +79,15 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                         <AntDesign name='stepforward' size={24} color={colors.CONTRAST} />
                     </PlayerController>
                 </View>
+                <PlayBackRateSelector 
+                    onPress={(rate)=>{
+                    console.log(rate)
+                    }} 
+                    containerStyle={{ marginTop: 20,   }} 
+                    activeRate='0.25'
+                />
             </View>
         </View>
-        {/* <PlayBackRateSelector containerStyle={{marginTop: 10}} /> */}
     </AppModal>
 };
 
