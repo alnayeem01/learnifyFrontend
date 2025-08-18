@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { View, StyleSheet, Image, Text, Pressable } from 'react-native'
 import AppModal from './AppModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getPlaybackState } from 'react-native-track-player/lib/src/trackPlayer';
-import { getPlayerState } from '../store/player';
+import { getPlayerState, updatePlaybackRate } from '../store/player';
 import colors from '../utils/colors';
 import AppLink from './AppLink';
 import { useProgress } from 'react-native-track-player';
@@ -27,14 +27,22 @@ const formattedDuration = (duration = 0) => {
     })
 };
 
+const onPlayBackRatePress=()=>{
+
+}
+
 const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
-    const { onGoingAudio } = useSelector(getPlayerState)
-    const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress } = useAudioController()
+    const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
+    const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress,seekTO, setPlaybackRate } = useAudioController()
     //dynamic image source 
     const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
     //audio progress from react-native-track-player
-    const { duration, position } = useProgress()
-    const { seekTO } = useAudioController()
+    const { duration, position } = useProgress();
+    const dispatch = useDispatch();
+    const onPlayBackRatePress = async(rate: number)=>{
+        await setPlaybackRate(rate);
+        dispatch(updatePlaybackRate(rate));
+    }
     return <AppModal
         animation
         visible={visible}
@@ -80,11 +88,9 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                     </PlayerController>
                 </View>
                 <PlayBackRateSelector 
-                    onPress={(rate)=>{
-                    console.log(rate)
-                    }} 
+                    onPress={onPlayBackRatePress} 
                     containerStyle={{ marginTop: 20,   }} 
-                    activeRate='0.25'
+                    activeRate={playBackRate.toString() }
                 />
             </View>
         </View>

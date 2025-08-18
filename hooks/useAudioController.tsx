@@ -126,10 +126,28 @@ const useAudioController = () => {
         //Update OnGoingAudio
         dispatch(updateOnGoingAudio(onGoingList[currentIndex-1]))
     }
+    // thsi function will take reae as param and using trackplayer.setRate() update the rate 
+    const setPlaybackRate = async (rate: number)=>{
+        await TrackPlayer.setRate(rate)
+    };
 
     //by returning from an object it can be used by destructuring
-    return { onAudioPress, isReady, isPlaying, isPaused, togglePlayPause, isBusy, seekTO, skipTo, onNextPress, onPreviousPress }
+    return { 
+        onAudioPress, 
+        isReady, 
+        isPlaying, 
+        isPaused, 
+        togglePlayPause, 
+        isBusy, 
+        seekTO, 
+        skipTo, 
+        onNextPress, 
+        onPreviousPress,
+        setPlaybackRate
+    }
     
 };
+
+
 
 export default useAudioController;
