@@ -15,6 +15,7 @@ import PlayPauseBtn from './PlayPauseBtn';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PlayerController from './PlayerController';
 import Loader from './Loader';
+import PlayBackRateSelector from './PlayBackRateSelector';
 interface Props {
     visible: boolean;
     onRequestClose(): void
@@ -28,7 +29,7 @@ const formattedDuration = (duration = 0) => {
 
 const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
     const { onGoingAudio  } = useSelector(getPlayerState)
-    const {skipTo, togglePlayPause, isPlaying, isBusy} = useAudioController()
+    const {skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress} = useAudioController()
     //dynamic image source 
     const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
     //audio progress from react-native-track-player
@@ -58,7 +59,7 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                 />
                 <View style={styles.control}>
                     {/* previous */}
-                    <PlayerController ignoreContainer={true} >
+                    <PlayerController onPress={onPreviousPress} ignoreContainer={true} >
                         <AntDesign name='stepbackward' size={24} color={colors.CONTRAST} />
                     </PlayerController>
                     {/* go back 5 sec */}
@@ -74,12 +75,13 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                         <FontAwesome name='rotate-right' size={20} color={colors.CONTRAST} />
                     </PlayerController>
                     {/* next */}
-                    <PlayerController ignoreContainer={true}>
+                    <PlayerController onPress={onNextPress} ignoreContainer={true}>
                         <AntDesign name='stepforward' size={24} color={colors.CONTRAST} />
                     </PlayerController>
                 </View>
             </View>
         </View>
+        {/* <PlayBackRateSelector containerStyle={{marginTop: 10}} /> */}
     </AppModal>
 };
 
