@@ -17,7 +17,7 @@ const AudioListItem: FC<Props> = ({audio, onPress}) => {
 
     return (
         <Pressable onPress={onPress} style={styles.listItem}>
-            <Image source={getsource(audio.poster)} style={styles.poster} />
+            <Image source={getsource(audio.poster?.url)} style={styles.poster} />
             <View style={styles.titleContainer}>
                 <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{audio.title}</Text>
                 <Text style={styles.owner} numberOfLines={1} ellipsizeMode='tail'>{audio.owner.name}</Text>
@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 15,
         backgroundColor: colors.OVERLAY,
-        borderRadius: 5
+        borderRadius: 5,
+        overflow: 'hidden'
     },
     titleContainer: {
         flex: 1,
