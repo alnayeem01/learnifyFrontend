@@ -10,61 +10,77 @@ import Loader from '../ui/Loader';
 import { useProgress } from 'react-native-track-player';
 import { mapRange } from '../utils/math';
 import AudioPlayer from '../ui/AudioPlayer';
+import CurrentAudioList from './CurrentAudioList';
 
 
 interface Props {
- 
+
 }
 
 export const MiniPlayerHeight = 60
 const MiniAudioPlayer: FC<Props> = props => {
     const [playerVisibility, setPlayerVisibiilty] = useState(false);
+    const [showCurrent, setShowCurrent] = useState(false);
     const { onGoingAudio } = useSelector(getPlayerState);
-    const {isPlaying, togglePlayPause, isBusy} = useAudioController();
+    const { isPlaying, togglePlayPause, isBusy } = useAudioController();
     // useProgress hook from react-native-track-player 
     const progress = useProgress()
     const source = onGoingAudio?.poster?.url ? { uri: onGoingAudio.poster?.url } : require('../../assets/images/music.jpg')
-    
-     const showPlayerModal =()=>{
+
+    const showPlayerModal = () => {
         setPlayerVisibiilty(true)
     };
 
-    const closePlayerModal =()=>{
+    const closePlayerModal = () => {
         setPlayerVisibiilty(false)
     };
+    const handleShowCurrent = () => {
+        setShowCurrent(false)
+    };
+    const handleOnListOptionPress = () => {
+        closePlayerModal();
+        setShowCurrent(true)
+    }
     return (
         <>
-        <View style={{
-            height: 2,
-            backgroundColor: colors.SECONDARY,
-            width: `${mapRange({
-                outputMin: 0,
-                outputMax: 100,
-                inputMin: 0,
-                inputMax: progress.duration,
-                inputValue: progress.position
-            })}%`
-         }}/>
-        <View style={styles.container}>
-            <View>
-                <Image source={source} style={styles.poster} />
+            <View style={{
+                height: 2,
+                backgroundColor: colors.SECONDARY,
+                width: `${mapRange({
+                    outputMin: 0,
+                    outputMax: 100,
+                    inputMin: 0,
+                    inputMax: progress.duration,
+                    inputValue: progress.position
+                })}%`
+            }} />
+            <View style={styles.container}>
+                <View>
+                    <Image source={source} style={styles.poster} />
+                </View>
+                <Pressable onPress={showPlayerModal} style={styles.contentContainer}>
+                    <Text style={styles.title}>{onGoingAudio?.title}</Text>
+                    <Text style={styles.owner}>{onGoingAudio?.owner.name}</Text>
+                </Pressable>
+                <Pressable style={{ paddingHorizontal: 10 }}>
+                    <AntDesign name='hearto' size={24} color={colors.CONTRAST} />
+                </Pressable>
+                {!isBusy ?
+                    <PlayPauseBtn
+                        playing={isPlaying}
+                        onPress={togglePlayPause}
+                    /> :
+                    <Loader />
+                }
             </View>
-            <Pressable onPress={showPlayerModal}  style={styles.contentContainer}>
-                <Text style={styles.title}>{onGoingAudio?.title}</Text>
-                <Text style={styles.owner}>{onGoingAudio?.owner.name}</Text>
-            </Pressable>
-            <Pressable style={{ paddingHorizontal: 10 }}>
-                <AntDesign name='hearto' size={24} color={colors.CONTRAST} />
-            </Pressable>
-            {!isBusy ? 
-            <PlayPauseBtn 
-            playing={isPlaying}
-            onPress={togglePlayPause}
-            /> :
-            <Loader />
-        }
-        </View>
-        <AudioPlayer visible={playerVisibility}  onRequestClose={closePlayerModal} />
+            <AudioPlayer
+                visible={playerVisibility}
+                onRequestClose={closePlayerModal} onListOptionPress={handleOnListOptionPress}
+            />
+            <CurrentAudioList
+                visible={showCurrent}
+                onRequestClose={handleShowCurrent}
+            />
         </>
     )
 };
