@@ -11,6 +11,7 @@ import formatDuration from 'format-duration';
 import Slider from '@react-native-community/slider';
 import useAudioController from '../../hooks/useAudioController';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PlayPauseBtn from './PlayPauseBtn';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PlayerController from './PlayerController';
@@ -19,7 +20,8 @@ import PlayBackRateSelector from './PlayBackRateSelector';
 import AudioIfnoContainer from '../components/AudioIfnoContainer';
 interface Props {
     visible: boolean;
-    onRequestClose(): void
+    onRequestClose(): void;
+    onListOptionPress?(): void
 }
 
 const formattedDuration = (duration = 0) => {
@@ -32,7 +34,7 @@ const onPlayBackRatePress = () => {
 
 }
 
-const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
+const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress }) => {
     const [showAudioInfo, setShowAudioInfo] = useState(false);
     const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
     const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress, seekTO, setPlaybackRate } = useAudioController()
@@ -104,6 +106,12 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                     containerStyle={{ marginTop: 20, }}
                     activeRate={playBackRate.toString()}
                 />
+
+                <View style={styles.listOptionBtnContainer}>
+                    <PlayerController ignoreContainer onPress={onListOptionPress}>
+                        <MaterialComIcon name='playlist-music' color={colors.CONTRAST} size={24} />
+                    </PlayerController>
+                </View>
             </View>
         </View>
     </AppModal>
@@ -149,6 +157,12 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 10,
         top: 10
+    },
+    listOptionBtnContainer:{
+        alignItems:'flex-end'
+    },
+    listOptionBtn:{
+
     }
 });
 
