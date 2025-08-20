@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { View, StyleSheet, Image, Text, Pressable } from 'react-native'
 import AppModal from './AppModal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import PlayerController from './PlayerController';
 import Loader from './Loader';
 import PlayBackRateSelector from './PlayBackRateSelector';
+import AudioIfnoContainer from '../components/AudioIfnoContainer';
 interface Props {
     visible: boolean;
     onRequestClose(): void
@@ -27,27 +28,38 @@ const formattedDuration = (duration = 0) => {
     })
 };
 
-const onPlayBackRatePress=()=>{
+const onPlayBackRatePress = () => {
 
 }
 
 const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
+    const [showAudioInfo, setShowAudioInfo] = useState(false);
     const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
-    const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress,seekTO, setPlaybackRate } = useAudioController()
+    const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress, seekTO, setPlaybackRate } = useAudioController()
     //dynamic image source 
     const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
     //audio progress from react-native-track-player
     const { duration, position } = useProgress();
     const dispatch = useDispatch();
-    const onPlayBackRatePress = async(rate: number)=>{
+    const onPlayBackRatePress = async (rate: number) => {
         await setPlaybackRate(rate);
         dispatch(updatePlaybackRate(rate));
     }
+
+
     return <AppModal
         animation
         visible={visible}
         onRequestClose={onRequestClose}>
         <View style={styles.container} >
+            <Pressable onPress={() => setShowAudioInfo(true)} style={styles.infoBtn}>
+                <AntDesign name='infocirlceo' size={24} color={colors.CONTRAST} />
+            </Pressable>
+            {/* info container consdionally renders */}
+            <AudioIfnoContainer
+                visible={showAudioInfo}
+                closeHandler={setShowAudioInfo}
+            />
             <Image source={source} style={styles.poster} />
             <View style={styles.contentContainer}>
                 <Text style={styles.title}>{onGoingAudio?.title}</Text>
@@ -87,10 +99,10 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose }) => {
                         <AntDesign name='stepforward' size={24} color={colors.CONTRAST} />
                     </PlayerController>
                 </View>
-                <PlayBackRateSelector 
-                    onPress={onPlayBackRatePress} 
-                    containerStyle={{ marginTop: 20,   }} 
-                    activeRate={playBackRate.toString() }
+                <PlayBackRateSelector
+                    onPress={onPlayBackRatePress}
+                    containerStyle={{ marginTop: 20, }}
+                    activeRate={playBackRate.toString()}
                 />
             </View>
         </View>
@@ -133,6 +145,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 20
     },
+    infoBtn: {
+        position: 'absolute',
+        right: 10,
+        top: 10
+    }
 });
 
 export default AudioPlayer;
