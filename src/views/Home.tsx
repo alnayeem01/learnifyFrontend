@@ -90,22 +90,7 @@ const Home: FC<Props> = props => {
     }
   }
 
-  //track  Player 
-  useEffect(() => {
-    /**
-     * Initializes the TrackPlayer instance asynchronously.
-     * 
-     * This function sets up the audio player by calling `TrackPlayer.setupPlayer()`.
-     * It should be called before attempting to use any playback features to ensure
-     * the player is properly initialized and ready for use.
-     *
-     * @returns {Promise<void>} A promise that resolves when the player is set up.
-     */
-    const setupPlayer = async () => {
-      await TrackPlayer.setupPlayer();
-    };
-    setupPlayer();
-  }, []);
+
   
   return (
     <AppView>

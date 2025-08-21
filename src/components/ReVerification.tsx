@@ -38,7 +38,7 @@ const ReVerification: FC<Props> = ({ time = 60, userId, ativeAtFirst = false, li
                 name: userId || profile?.name || ""
             }});
         } catch (e) {
-            console.log(e)
+            
         }
     };
 

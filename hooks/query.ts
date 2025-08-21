@@ -25,7 +25,6 @@ export const useFetchLatestAudios = () =>{
         const errorMessage = catchAsyncError(query.error);
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
       }
-      console.log(query)
     }, [query.error, dispatch]);
     return query
 }
@@ -55,7 +54,6 @@ export const useFetchRecommendedAudios = () =>{
 const fetchPlaylist = async (): Promise<PlayList[]> =>{
   const client = await getClient()
   const {data} = await client.get('/playlist/by-profile')
-  console.log(data)
   return data.playlist
 }
 
@@ -89,7 +87,6 @@ export const useFetchUploadsByProfile = () =>{
     })
      useEffect(() => {
       if (query.error) {
-        console.log(query.error)
         const errorMessage = catchAsyncError(query.error);
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
       }

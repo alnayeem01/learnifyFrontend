@@ -98,7 +98,7 @@ const ProfileSettings: FC<Props> = props => {
       });
       setUserInfo({...userInfo, avatar: path});
     }catch(e){
-      console.log(e)
+      
     }
   }
 
