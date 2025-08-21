@@ -2,13 +2,17 @@ import { FC } from 'react'
 import { View, StyleSheet, Pressable, Image, Text } from 'react-native'
 import colors from '../../utils/colors';
 import { AudioData } from '../../@types/audio';
+import PlayAnimation from '../../ui/PlayAnimation';
+import { isPlaying } from 'react-native-track-player';
+import useAudioController from '../../../hooks/useAudioController';
 
 
 interface Props {
     audio: AudioData,
-    onPress?(): void
+    onPress?(): void,
+    isPlaying: boolean
 }
-const AudioListItem: FC<Props> = ({audio, onPress}) => {
+const AudioListItem: FC<Props> = ({audio, onPress,isPlaying}) => {
 
     //helper function to dynamically chose iamge if no image passed then we pick our loacl image 
     const getsource = (poster?: string) => {
@@ -17,7 +21,10 @@ const AudioListItem: FC<Props> = ({audio, onPress}) => {
 
     return (
         <Pressable onPress={onPress} style={styles.listItem}>
-            <Image source={getsource(audio.poster?.url)} style={styles.poster} />
+            <View>
+                <Image source={getsource(audio.poster?.url)} style={styles.poster} />
+                <PlayAnimation visible={isPlaying} />
+            </View>
             <View style={styles.titleContainer}>
                 <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{audio.title}</Text>
                 <Text style={styles.owner} numberOfLines={1} ellipsizeMode='tail'>{audio.owner.name}</Text>

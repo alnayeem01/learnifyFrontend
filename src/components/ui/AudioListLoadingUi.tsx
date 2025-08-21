@@ -14,7 +14,7 @@ const AudioListLoadingUi:FC<Props> = ({items = 8}) => {
         <View>
             {dummyData.map((_,index)=>{
                 return(
-                    <View key={index} style={styles.dummyListItem}> </View>
+                    <View key={index} style={styles.dummyListItem}></View> 
                 )
             })}
         </View>

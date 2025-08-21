@@ -1,10 +1,13 @@
 
-import TrackPlayer, { State, Track, usePlaybackState, useProgress } from "react-native-track-player"
+import TrackPlayer, { AppKilledPlaybackBehavior, Capability, State, Track, usePlaybackState, useProgress } from "react-native-track-player"
 import { AudioData } from "../src/@types/audio"
 import { useDispatch, useSelector } from "react-redux";
 import { getPlayerState, updateOnGoingAudio, updateOnGoingList } from "../src/store/player";
 import deepEqual from "deep-equal";
 import { getPosition } from "react-native-track-player/lib/src/trackPlayer";
+import { useEffect } from "react";
+
+let ready=false;
 
 const updateQueue = async (data: AudioData[]) => {
     //passing the Track object required by react native Track Player 
@@ -35,9 +38,9 @@ const useAudioController = () => {
     const isReady = playbackState !== State.None;
     console.log(isReady)
     const isPlaying = playbackState === State.Playing;
-     const isPaused = playbackState === State.Paused;
-     const isBusy = playbackState === State.Buffering || playbackState === State.Loading
-     ;
+    const isPaused = playbackState === State.Paused;
+    const isBusy = playbackState === State.Buffering || playbackState === State.Loading
+        ;
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
 
         if (!isReady) {
@@ -74,7 +77,7 @@ const useAudioController = () => {
                 await TrackPlayer.reset();
                 await updateQueue(data);
                 dispatch(updateOnGoingList(data))
-            }  
+            }
             await TrackPlayer.skip(index);
             await TrackPlayer.play()
             dispatch(updateOnGoingAudio(item))
@@ -90,62 +93,101 @@ const useAudioController = () => {
      * @async
      * @returns {Promise<void>} A promise that resolves when the playback state has been toggled.
      */
-    const togglePlayPause = async()=>{
-        if(isPlaying) await TrackPlayer.pause();
-        if(isPaused) await TrackPlayer.play()
+    const togglePlayPause = async () => {
+        if (isPlaying) await TrackPlayer.pause();
+        if (isPaused) await TrackPlayer.play()
     };
 
     //seek
-    const seekTO = async (position : number) =>{
+    const seekTO = async (position: number) => {
         await TrackPlayer.seekTo(position)
     };
 
-     //skip
-    const skipTo = async (sec : number) =>{
-       const currentPosition = await TrackPlayer.getProgress().then((progress) => progress.position)
+    //skip
+    const skipTo = async (sec: number) => {
+        const currentPosition = await TrackPlayer.getProgress().then((progress) => progress.position)
         await TrackPlayer.seekTo(currentPosition + sec)
     };
-    
+
     //next button
-    const onNextPress =async()=>{
+    const onNextPress = async () => {
         const currentList = await TrackPlayer.getQueue();
         const currentIndex = await TrackPlayer.getActiveTrackIndex()
         // return if: index ==last audio or null or undefined
-        if(currentIndex === null || currentIndex === undefined ||currentIndex >= currentList.length -1) return;
+        if (currentIndex === null || currentIndex === undefined || currentIndex >= currentList.length - 1) return;
         await TrackPlayer.skipToNext()
         //Update OnGoingAudio
-        dispatch(updateOnGoingAudio(onGoingList[currentIndex+1]))
+        dispatch(updateOnGoingAudio(onGoingList[currentIndex + 1]))
     };
     //next button
-    const onPreviousPress =async()=>{
+    const onPreviousPress = async () => {
         const currentList = await TrackPlayer.getQueue();
         const currentIndex = await TrackPlayer.getActiveTrackIndex()
         // return if: index ==first audio or null or undefined
-        if(currentIndex === undefined || currentIndex <= 0) return;
+        if (currentIndex === undefined || currentIndex <= 0) return;
         await TrackPlayer.skipToPrevious()
         //Update OnGoingAudio
-        dispatch(updateOnGoingAudio(onGoingList[currentIndex-1]))
+        dispatch(updateOnGoingAudio(onGoingList[currentIndex - 1]))
     }
     // thsi function will take reae as param and using trackplayer.setRate() update the rate 
-    const setPlaybackRate = async (rate: number)=>{
+    const setPlaybackRate = async (rate: number) => {
         await TrackPlayer.setRate(rate)
     };
 
+    //track  Player 
+    useEffect(() => {
+        /**
+         * Initializes the TrackPlayer instance asynchronously.
+         * 
+         * This function sets up the audio player by calling `TrackPlayer.setupPlayer()`.
+         * It should be called before attempting to use any playback features to ensure
+         * the player is properly initialized and ready for use.
+         *
+         * @returns {Promise<void>} A promise that resolves when the player is set up.
+         */
+        const setupPlayer = async () => {
+            if(ready) return;
+            await TrackPlayer.setupPlayer();
+            //BackGround Playing: this is the config that allows player to continue plaaying in androi devices
+            await TrackPlayer.updateOptions({
+                android: {
+                    // this will stop the playing upon removal of app from background
+                    appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification
+                },
+                // this are permission of thing that audioPlayers in notification bar can do 
+                capabilities:[
+                    Capability.Play,
+                    Capability.Pause,
+                    Capability.SkipToNext,
+                    Capability.SkipToPrevious,
+                ],
+                compactCapabilities:[
+                     Capability.Play,
+                    Capability.Pause,
+                    Capability.SkipToNext,
+                    Capability.SkipToPrevious,
+                ]
+            })
+        };
+        setupPlayer();
+        ready=true
+    }, []);
+
     //by returning from an object it can be used by destructuring
-    return { 
-        onAudioPress, 
-        isReady, 
-        isPlaying, 
-        isPaused, 
-        togglePlayPause, 
-        isBusy, 
-        seekTO, 
-        skipTo, 
-        onNextPress, 
+    return {
+        onAudioPress,
+        isReady,
+        isPlaying,
+        isPaused,
+        togglePlayPause,
+        isBusy,
+        seekTO,
+        skipTo,
+        onNextPress,
         onPreviousPress,
         setPlaybackRate
     }
-    
+
 };
 
 

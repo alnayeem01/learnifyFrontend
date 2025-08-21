@@ -1,7 +1,20 @@
-import TrackPlayer, {Event} from "react-native-track-player"
+import TrackPlayer, {Event} from 'react-native-track-player';
 
-const playBackService = async ()=>{
-    TrackPlayer.addEventListener(Event.RemotePlay, ()=>{});
+
+//This is where we can trigger control event when app  is on background
+const playBackService = async () => {
+  TrackPlayer.addEventListener(Event.RemotePlay, () => {
+    TrackPlayer.play();
+  });
+  TrackPlayer.addEventListener(Event.RemotePause, () => {
+    TrackPlayer.pause();
+  });
+  TrackPlayer.addEventListener(Event.RemoteNext, () => {
+    TrackPlayer.skipToNext();
+  });
+  TrackPlayer.addEventListener(Event.RemotePrevious, () => {
+    TrackPlayer.skipToPrevious();
+  });
 };
 
 export default playBackService;
