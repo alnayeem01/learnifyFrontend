@@ -150,8 +150,8 @@ const useAudioController = () => {
             await TrackPlayer.setupPlayer();
             //BackGround Playing: this is the config that allows player to continue plaaying in androi devices
             await TrackPlayer.updateOptions({
-                //this will enforce callign progressUpatedEvent every 1 second
-                progressUpdateEventInterval: 1,
+                //this will enforce callign progressUpatedEvent every 10 second
+                progressUpdateEventInterval: 10,
                 android: {
                     // this will stop the playing upon removal of app from background
                     appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification
