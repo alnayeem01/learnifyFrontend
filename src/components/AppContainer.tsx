@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Notification from '../views/Notification';
+import colors from '../utils/colors';
 
 interface Props {
     children: ReactNode
@@ -20,7 +21,8 @@ const AppContainer: FC<Props> = ({ children }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: colors.PRIMARY
     }
 });
 
