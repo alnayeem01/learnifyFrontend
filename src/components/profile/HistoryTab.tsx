@@ -5,13 +5,36 @@ import EmptyRecords from '../ui/EmptyRecords';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
 import colors from '../../utils/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { getClient } from '../../api/client';
+import catchAsyncError from '../../api/catchError';
+import { useQueryClient } from '@tanstack/react-query';
+import { historyAudio } from '../../@types/audio';
 
 
 interface Props {
 
 }
 const HistoryTab: FC<Props> = props => {
-  const { data, error, isLoading } = useFetchHistory()
+  const { data, error, isLoading } = useFetchHistory();
+  const queryClient = useQueryClient();
+  const removeHistories = async (histories: string[]) =>{
+    try{
+      
+      const client = getClient();
+      // this will pass array of histories as query 
+      const res = (await client).delete('history/?histories='+JSON.stringify(histories));
+      console.log(res.message)
+      //invalidate previous history data
+      queryClient.invalidateQueries({queryKey:['histories']})
+    }catch(e){
+      const errorMessage = catchAsyncError(e);
+      console.log(errorMessage)
+    }
+  };
+
+  const handleSingleHistoryDelete = async(audio: historyAudio)=>{
+    await removeHistories([audio.id])
+  }
 
   //Loading state UI
   if (isLoading) {
@@ -39,7 +62,8 @@ const HistoryTab: FC<Props> = props => {
                 return (
                   <View style={styles.history} key={audio.id + index}>
                     <Text style={styles.historyTitle}>{audio.title}</Text>
-                    <Pressable>
+                    {/* here we will call handelSingleHistoryDelete function */}
+                    <Pressable onPress={()=>handleSingleHistoryDelete(audio)} >
                       <AntDesign name='close' color={colors.CONTRAST} />
                     </Pressable>
                   </View>
