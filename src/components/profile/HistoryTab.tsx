@@ -9,6 +9,7 @@ import { getClient } from '../../api/client';
 import catchAsyncError from '../../api/catchError';
 import { useQueryClient } from '@tanstack/react-query';
 import { historyAudio } from '../../@types/audio';
+import { useNavigation } from '@react-navigation/native';
 
 
 interface Props {
@@ -18,7 +19,7 @@ const HistoryTab: FC<Props> = props => {
   const { data, error, isLoading } = useFetchHistory();
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
-
+  const navigate = useNavigation();
   const removeHistories = async (histories: string[]) => {
     try {
 
@@ -53,10 +54,24 @@ const HistoryTab: FC<Props> = props => {
     })
   }
 
-  const handleMultipleHistoryDelete = async ()=>{
+  const handleMultipleHistoryDelete = async () => {
     setSelectedHistories([]); // this will refresh the array after this function is called
     await removeHistories(selectedHistories)
   }
+
+  //this useEffect clear selectedHistorie on naviagte to other screen
+  useEffect(() => {
+    const unSelectHistory = () => {
+      setSelectedHistories([])
+    };
+    navigate.addListener('blur', unSelectHistory);
+
+    // useEffect can return a cleanup function that runs on unmount or before re-running the effect.
+    // Use it to remove listeners or cancel subscriptions to prevent memory leaks.
+    return () => {
+      navigate.removeListener('blur', unSelectHistory)
+    }
+  }, [])
 
   //Loading state UI
   if (isLoading) {
