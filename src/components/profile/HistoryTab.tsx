@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native'
 import { useFetchHistory } from '../../../hooks/query';
 import EmptyRecords from '../ui/EmptyRecords';
@@ -17,23 +17,45 @@ interface Props {
 const HistoryTab: FC<Props> = props => {
   const { data, error, isLoading } = useFetchHistory();
   const queryClient = useQueryClient();
-  const removeHistories = async (histories: string[]) =>{
-    try{
-      
+  const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
+
+  const removeHistories = async (histories: string[]) => {
+    try {
+
       const client = getClient();
       // this will pass array of histories as query 
-      const res = (await client).delete('history/?histories='+JSON.stringify(histories));
-      console.log(res.message)
+      const res = (await client).delete('history/?histories=' + JSON.stringify(histories));
       //invalidate previous history data
-      queryClient.invalidateQueries({queryKey:['histories']})
-    }catch(e){
+      queryClient.invalidateQueries({ queryKey: ['histories'] })
+    } catch (e) {
       const errorMessage = catchAsyncError(e);
       console.log(errorMessage)
     }
   };
 
-  const handleSingleHistoryDelete = async(audio: historyAudio)=>{
+  const handleSingleHistoryDelete = async (audio: historyAudio) => {
     await removeHistories([audio.id])
+  };
+
+  const handleOnLongPress = (audio: historyAudio) => {
+    setSelectedHistories([audio.id])
+  }
+
+  const handleOnPress = (audio: historyAudio) => {
+    //if audio already selected : unselect it 
+
+    //else select audio
+    setSelectedHistories((prev) => {
+      if (prev.includes(audio.id)) {
+        return prev.filter((item) => audio.id !== item) // this will return audios other than filtered one
+      }
+      return [...prev, audio.id]
+    })
+  }
+
+  const handleMultipleHistoryDelete = async ()=>{
+    setSelectedHistories([]); // this will refresh the array after this function is called
+    await removeHistories(selectedHistories)
   }
 
   //Loading state UI
@@ -49,31 +71,44 @@ const HistoryTab: FC<Props> = props => {
   }
   //histoires UI 
   return (
-    <ScrollView style={styles.container}>
-      {/* loop over items in history  */}
-      {data.map((item, index) => {
-        return (
-          <View key={index + item.id}>
-            {/* this is the date */}
-            <Text style={styles.date}>{item.id}</Text>
-            {/* loop over the fierst audios array in first item in history */}
-            <View style={styles.listcontainer}>
-              {item.audios.map((audio, index) => {
-                return (
-                  <View style={styles.history} key={audio.id + index}>
-                    <Text style={styles.historyTitle}>{audio.title}</Text>
-                    {/* here we will call handelSingleHistoryDelete function */}
-                    <Pressable onPress={()=>handleSingleHistoryDelete(audio)} >
-                      <AntDesign name='close' color={colors.CONTRAST} />
+    <>
+      {selectedHistories.length ? <Pressable onPress={handleMultipleHistoryDelete} style={styles.removeBtn}>
+        <Text style={styles.removeBtnText}>Remove</Text>
+      </Pressable> : null}
+
+      <ScrollView style={styles.container}>
+        {/* loop over items in history  */}
+        {data.map((item, index) => {
+          return (
+            <View key={index + item.id}>
+              {/* this is the date */}
+              <Text style={styles.date}>{item.id}</Text>
+              {/* loop over the fierst audios array in first item in history */}
+              <View style={styles.listcontainer}>
+                {item.audios.map((audio, index) => {
+                  return (
+                    <Pressable
+                      onLongPress={() => handleOnLongPress(audio)}
+                      onPress={() => handleOnPress(audio)}
+                      style={[styles.history, {
+                        backgroundColor: selectedHistories.includes(audio.id) ? colors.INACTIVE_CONTRAST : colors.OVERLAY  // if the audio is in selected history than change the bgColor of that history 
+                      }]}
+                      key={audio.id + index}
+                    >
+                      <Text style={styles.historyTitle}>{audio.title}</Text>
+                      {/* here we will call handelSingleHistoryDelete function */}
+                      <Pressable onPress={() => handleSingleHistoryDelete(audio)} >
+                        <AntDesign name='close' color={colors.CONTRAST} />
+                      </Pressable>
                     </Pressable>
-                  </View>
-                )
-              })}
+                  )
+                })}
+              </View>
             </View>
-          </View>
-        )
-      })}
-    </ScrollView>
+          )
+        })}
+      </ScrollView>
+    </>
   )
 
 };
@@ -82,7 +117,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 5,
   },
-   listcontainer: {
+  listcontainer: {
     marginTop: 10,
     padding: 10,
     backgroundColor: colors.OVERLAY,
@@ -107,6 +142,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginBottom: 10
+  },
+  removeBtn: {
+    padding: 10,
+    alignSelf: 'flex-end'
+  },
+  removeBtnText: {
+    color: colors.CONTRAST
   }
 
 });
