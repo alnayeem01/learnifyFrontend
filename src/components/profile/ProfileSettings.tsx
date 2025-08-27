@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native'
+import { View, StyleSheet, Text, Pressable, TextInput, Alert } from 'react-native'
 import AppHeader from '../AppHeader';
 import colors from '../../utils/colors';
 import AvatarField from '../ui/AvatarField';
@@ -17,6 +17,8 @@ import ImagePicker from "react-native-image-crop-picker";
 import ReVerification from '../ReVerification';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useNavigation } from '@react-navigation/native';
+import { useFetchHistory } from '../../../hooks/query';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface Props { }
 
@@ -27,6 +29,11 @@ interface ProfileInfo {
 
 const ProfileSettings: FC<Props> = props => {
   const [userInfo, setUserInfo] = useState<ProfileInfo>({ name: "" });
+  // useQueryClient gives access to React Query's cache manager.
+  // Use it to invalidate, refetch, read, set, or remove query data across your app.
+  // Ideal for syncing UI after mutations, optimistic updates, or manual cache handling.
+
+  const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
   const dispatch = useDispatch();
   const { profile } = useSelector(getAuthState);        //getting it from redux store 
@@ -102,6 +109,43 @@ const ProfileSettings: FC<Props> = props => {
 
     }
   }
+  //clear all History
+  const handleAllHistoyClear = async () => {
+    //Alert takes: name,meesage, array of buttons and options
+    Alert.alert('Are you sure?', 'This action will delete all your history!', [
+      {
+        onPress() {
+          clearHistory()  // this will call clear history funciton
+        },
+        style: 'destructive', // this style only works for IOS
+        text: 'Clear'
+      },
+      {
+        onPress(value) {
+          console.log(value)
+        },
+        style: 'cancel', // this style only works for IOS
+        text: 'cancel'
+      },
+    ],
+      {
+        cancelable: true  // android:  this will let android user to clsoe the modal on backdrop press
+      })
+  }
+
+  const clearHistory = async () => {
+    try {
+      const client = await getClient();
+      //sendign yes as query
+      const res = client.delete('history/?all=yes');
+      //here we wil refetch the history api, so it will update everywhere else
+      queryClient.invalidateQueries({queryKey: ['histories']})
+      dispatch(updateNotification({message: 'History is cleared!', type: 'success'}))
+    } catch (e: any) {
+      const errorMessage = catchAsyncError(e);
+      dispatch(updateNotification({message: errorMessage, type: 'error'}))
+    }
+  }
 
   useEffect(() => {
     if (profile) setUserInfo({ name: profile.name, avatar: profile.avatar })
@@ -109,7 +153,7 @@ const ProfileSettings: FC<Props> = props => {
 
   return <View style={styles.container}>
     <AppHeader title='Settings' />
-  {/* profile setting */}
+    {/* profile setting */}
     <View style={styles.titleContainer}>
       <Text style={styles.title}>Profile Settings</Text>
     </View>
@@ -140,18 +184,18 @@ const ProfileSettings: FC<Props> = props => {
         }
       </View>
     </View>
-        {/* history */}
+    {/* history */}
     <View style={styles.titleContainer}>
       <Text style={styles.title}>History</Text>
     </View>
 
     <View style={styles.settignsOptionsContainer}>
-        <Pressable onPress={() => handleLogOut(true)} style={styles.logOutBtn}>
+      <Pressable onPress={() => handleAllHistoyClear()} style={styles.logOutBtn}>
         <MaterialComIcon name='broom' size={20} color={colors.CONTRAST} />
         <Text style={styles.logOutBtnTitle}>Clear All history</Text>
       </Pressable>
     </View>
-        {/* log out */}
+    {/* log out */}
     <View style={styles.titleContainer}>
       <Text style={styles.title}>Log Out</Text>
     </View>
@@ -167,7 +211,7 @@ const ProfileSettings: FC<Props> = props => {
       </Pressable>
     </View>
 
-    
+
     {!isSame ?
       <View style={styles.marignTop}>
         <AppButton title='Submit' borderRadius={7} onPress={hanldleSubmit} busy={busy} />

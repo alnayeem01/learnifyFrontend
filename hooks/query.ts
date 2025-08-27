@@ -126,7 +126,7 @@ const fetchHistory = async ():Promise<History[]> =>{
 export const useFetchHistory = () =>{
 
       const query =  useQuery({
-      queryKey: ['history'],
+      queryKey: ['histories'],
       queryFn: () => fetchHistory(),
     })
      useEffect(() => {
