@@ -7,8 +7,8 @@ import colors from '../../utils/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getClient } from '../../api/client';
 import catchAsyncError from '../../api/catchError';
-import { useQueryClient } from '@tanstack/react-query';
-import { historyAudio } from '../../@types/audio';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { History, historyAudio } from '../../@types/audio';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -16,9 +16,26 @@ interface Props {
 
 }
 const HistoryTab: FC<Props> = props => {
-  const { data, error, isLoading } = useFetchHistory();
+  const { data, isLoading } = useFetchHistory();
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
+
+  const reomoveMutate = useMutation({
+    mutationFn: async (histories)=> await removeHistories(histories),
+    onMutate:(histories: string[])=> { // this holds the value of selectedHistories that needs to be removed
+        queryClient.setQueryData<History[]>(['histories'],(oldData)=>{
+          let newData:History[] = []
+          if(!oldData) return newData
+          for (let data of oldData){
+            const filteredData = data.audios.filter((item)=> !histories.includes(item.id))
+            if(filteredData.length<1){
+              newData.push({id: data.id, audios: filteredData})
+            }
+            return newData
+          }
+        })
+    },
+  })
   const navigate = useNavigation();
   const removeHistories = async (histories: string[]) => {
     try {
@@ -35,7 +52,7 @@ const HistoryTab: FC<Props> = props => {
   };
 
   const handleSingleHistoryDelete = async (audio: historyAudio) => {
-    await removeHistories([audio.id])
+    reomoveMutate.mutate([audio.id])
   };
 
   const handleOnLongPress = (audio: historyAudio) => {
@@ -44,7 +61,6 @@ const HistoryTab: FC<Props> = props => {
 
   const handleOnPress = (audio: historyAudio) => {
     //if audio already selected : unselect it 
-
     //else select audio
     setSelectedHistories((prev) => {
       if (prev.includes(audio.id)) {
@@ -56,7 +72,7 @@ const HistoryTab: FC<Props> = props => {
 
   const handleMultipleHistoryDelete = async () => {
     setSelectedHistories([]); // this will refresh the array after this function is called
-    await removeHistories(selectedHistories)
+    reomoveMutate.mutate(selectedHistories);
   }
 
   //this useEffect clear selectedHistorie on naviagte to other screen
@@ -81,7 +97,7 @@ const HistoryTab: FC<Props> = props => {
   // Empty Data UI
   if (!data?.length) {
     return (
-      <EmptyRecords title='There is records on your history!' />
+      <EmptyRecords title='There is no records on your history!' />
     )
   }
   //histoires UI 
