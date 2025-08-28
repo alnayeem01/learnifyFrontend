@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native'
+import { View, StyleSheet, Text, ScrollView, Pressable, RefreshControl } from 'react-native'
 import { useFetchHistory } from '../../../hooks/query';
 import EmptyRecords from '../ui/EmptyRecords';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
@@ -16,24 +16,29 @@ interface Props {
 
 }
 const HistoryTab: FC<Props> = props => {
-  const { data, isLoading } = useFetchHistory();
+  const { data, isLoading, isFetching } = useFetchHistory();
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
 
   const reomoveMutate = useMutation({
-    mutationFn: async (histories)=> await removeHistories(histories),
-    onMutate:(histories: string[])=> { // this holds the value of selectedHistories that needs to be removed
-        queryClient.setQueryData<History[]>(['histories'],(oldData)=>{
-          let newData:History[] = []
-          if(!oldData) return newData
-          for (let data of oldData){
-            const filteredData = data.audios.filter((item)=> !histories.includes(item.id))
-            if(filteredData.length<1){
-              newData.push({id: data.id, audios: filteredData})
-            }
-            return newData
+    // mutationFn = the actual async call to your API that removes histories
+    mutationFn: async (histories) => await removeHistories(histories),
+    // onMutate runs immediately when mutation is triggered (before server responds)
+    // we use it for an "optimistic update" → update the cache instantly for snappy UI
+    onMutate: (histories: string[]) => {
+      queryClient.setQueryData<History[]>(['histories'], (oldData) => {
+        let newData: History[] = []
+        if (!oldData) return newData
+        // loop through current cached histories
+        for (let data of oldData) {
+          // filter out audios that match any of the "histories" ids we want to remove
+          const filteredData = data.audios.filter((item) => !histories.includes(item.id))
+          if (filteredData.length > 0) {
+            newData.push({ id: data.id, audios: filteredData })
           }
-        })
+        }
+        return newData
+      })
     },
   })
   const navigate = useNavigation();
@@ -75,6 +80,11 @@ const HistoryTab: FC<Props> = props => {
     reomoveMutate.mutate(selectedHistories);
   }
 
+  // this will enforeceh refetch onRefresh
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['histories'] })
+  }
+
   //this useEffect clear selectedHistorie on naviagte to other screen
   useEffect(() => {
     const unSelectHistory = () => {
@@ -94,12 +104,7 @@ const HistoryTab: FC<Props> = props => {
     return (<View style={styles.container} ><AudioListLoadingUi /></View>
     )
   };
-  // Empty Data UI
-  if (!data?.length) {
-    return (
-      <EmptyRecords title='There is no records on your history!' />
-    )
-  }
+
   //histoires UI 
   return (
     <>
@@ -107,9 +112,22 @@ const HistoryTab: FC<Props> = props => {
         <Text style={styles.removeBtnText}>Remove</Text>
       </Pressable> : null}
 
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            tintColor={colors.CONTRAST}
+            colors={[colors.PRIMARY]}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
+        {/* empty data UI */}
+        {!data?.length ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><EmptyRecords title='There is no history!' /></View> : null}
+
         {/* loop over items in history  */}
-        {data.map((item, index) => {
+        {data?.map((item, index) => {
           return (
             <View key={index + item.id}>
               {/* this is the date */}
