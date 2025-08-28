@@ -87,9 +87,9 @@ const MiniAudioPlayer: FC<Props> = props => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: '100%',
+        width: '100%',
         height: MiniPlayerHeight,
-        backgroundColor: colors.OVERLAY,
+        backgroundColor:'rgba(29, 13, 13, 0.8)',
         padding: 5,
         paddingLeft: 5,
         flexDirection: 'row',

@@ -63,7 +63,7 @@ const LatestUploads: FC<Props> = ({onAudioPress, onAudioLongPress}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 15
+       
     },
     dummyTitleView: {
         height: 20,
@@ -79,8 +79,9 @@ const styles = StyleSheet.create({
         marginRight: 15,
         borderRadius: 5
     },
-    title:{
-    color: colors.CONTRAST, padding: 5, fontSize: 20, fontWeight: 'bold', marginBottom: 10 
+    title: {
+        color: colors.CONTRAST, padding: 5, fontSize: 20, fontWeight: 'bold', marginBottom: 15
+
     }
 });
 

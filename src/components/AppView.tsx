@@ -13,14 +13,20 @@ const AppView:FC<Props> = ({children}) => {
     <View>
         {children}
     </View>
-    {isReady ? <MiniAudioPlayer /> : null }
+    {isReady ? <View style={styles.miniAudioPlayerContainer}><MiniAudioPlayer /></View> : null }
   </View>
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingBottom: 62
+    },
+    miniAudioPlayerContainer:{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 96,
+        top: 0
     }
 });
 

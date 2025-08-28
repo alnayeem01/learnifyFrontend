@@ -4,7 +4,7 @@ import catchAsyncError from "../src/api/catchError";
 import { updateNotification } from "../src/store/notificaton";
 import { useQuery } from "@tanstack/react-query";
 import {getClient} from "../src/api/client";
-import { AudioData, History, PlayList } from "../src/@types/audio";
+import { AudioData, History, PlayList, RecentlyPlayed } from "../src/@types/audio";
 import { getFromAsyncStorage, keys } from "../src/utils/asyncStorage";
 
 
@@ -128,6 +128,46 @@ export const useFetchHistory = () =>{
       const query =  useQuery({
       queryKey: ['histories'],
       queryFn: () => fetchHistory(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchRecentlyPlayed = async ():Promise<RecentlyPlayed[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('/history/recently-played')
+  return data.audios
+}
+
+export const useFetchRecentlyPlayed = () =>{
+
+      const query =  useQuery({
+      queryKey: ['recently-played'],
+      queryFn: () => fetchRecentlyPlayed(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchRecommendedPlaylist = async ():Promise<PlayList[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('profile/auto-generated-playlist')
+  return data.playlist
+}
+
+export const useFetchRecommendedPlaylist = () =>{
+
+      const query =  useQuery({
+      queryKey: ['histories'],
+      queryFn: () => fetchRecommendedPlaylist(),
     })
      useEffect(() => {
       if (query.error) {
