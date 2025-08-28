@@ -25,7 +25,7 @@ const FileSelector: FC<Props> = ({ icon, btnTitle, style, onSelect, options }) =
                 // User cancelled the picker, do nothing
                 return;
             }
-            console.log(e);
+            
         }
     };
     return (

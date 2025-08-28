@@ -8,7 +8,7 @@ interface Props{
     items?:number
 }
 const AudioListLoadingUi:FC<Props> = ({items = 8}) => {
-    const dummyData = new Array(items).fill(null);
+    const dummyData = new Array(items).fill('');
   return(
    <PulseAnimationContainer>
         <View>

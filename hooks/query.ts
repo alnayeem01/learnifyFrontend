@@ -4,7 +4,7 @@ import catchAsyncError from "../src/api/catchError";
 import { updateNotification } from "../src/store/notificaton";
 import { useQuery } from "@tanstack/react-query";
 import {getClient} from "../src/api/client";
-import { AudioData, PlayList } from "../src/@types/audio";
+import { AudioData, History, PlayList } from "../src/@types/audio";
 import { getFromAsyncStorage, keys } from "../src/utils/asyncStorage";
 
 
@@ -25,7 +25,6 @@ export const useFetchLatestAudios = () =>{
         const errorMessage = catchAsyncError(query.error);
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
       }
-      console.log(query)
     }, [query.error, dispatch]);
     return query
 }
@@ -55,7 +54,6 @@ export const useFetchRecommendedAudios = () =>{
 const fetchPlaylist = async (): Promise<PlayList[]> =>{
   const client = await getClient()
   const {data} = await client.get('/playlist/by-profile')
-  console.log(data)
   return data.playlist
 }
 
@@ -89,7 +87,6 @@ export const useFetchUploadsByProfile = () =>{
     })
      useEffect(() => {
       if (query.error) {
-        console.log(query.error)
         const errorMessage = catchAsyncError(query.error);
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
       }
@@ -116,5 +113,26 @@ export const useFetchFavourites = () =>{
         dispatch(updateNotification({ message: errorMessage, type: 'error' }));
       }
     }, [query.error, dispatch]);
+    return query
+}
+
+
+const fetchHistory = async ():Promise<History[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('/history/')
+  return data.histories
+}
+
+export const useFetchHistory = () =>{
+
+      const query =  useQuery({
+      queryKey: ['histories'],
+      queryFn: () => fetchHistory(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
     return query
 }
