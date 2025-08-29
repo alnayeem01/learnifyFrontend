@@ -34,9 +34,10 @@ const RecentlyPlayed: FC<Props> = props => {
         <Text style={styles.title}>Recently Played</Text>
         <View style={styles.container}>
             {
-                data?.map((item) => {
+                data?.map((item, index) => {
                     return (
-                        <RecentlyPlayedCard key={item.id} title={item.title} poster={item.poster} onPress={() => { }} />
+                        // KEY : added index with the item id to avoid passing same key and enforce unique key.
+                        <RecentlyPlayedCard key={item.id +index} title={item.title} poster={item.poster} onPress={() => { }} />
                     )
                 })
             }

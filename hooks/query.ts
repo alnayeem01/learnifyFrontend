@@ -166,7 +166,7 @@ const fetchRecommendedPlaylist = async ():Promise<PlayList[]> =>{
 export const useFetchRecommendedPlaylist = () =>{
 
       const query =  useQuery({
-      queryKey: ['histories'],
+      queryKey: ['recommended-playlist'],
       queryFn: () => fetchRecommendedPlaylist(),
     })
      useEffect(() => {

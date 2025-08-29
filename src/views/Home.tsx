@@ -13,7 +13,6 @@ import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
-import TrackPlayer from 'react-native-track-player';
 import useAudioController from '../../hooks/useAudioController';
 import AppView from '../components/AppView';
 import RecentlyPlayed from '../components/RecentlyPlayed';
