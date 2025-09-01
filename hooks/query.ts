@@ -4,8 +4,8 @@ import catchAsyncError from "../src/api/catchError";
 import { updateNotification } from "../src/store/notificaton";
 import { useQuery } from "@tanstack/react-query";
 import {getClient} from "../src/api/client";
-import { AudioData, History, PlayList, RecentlyPlayed } from "../src/@types/audio";
-import { getFromAsyncStorage, keys } from "../src/utils/asyncStorage";
+import { AudioData, History, PlayList, } from "../src/@types/audio";
+
 
 
 const fetchLatest = async () : Promise<AudioData[]> =>{
@@ -137,7 +137,7 @@ export const useFetchHistory = () =>{
     return query
 }
 
-const fetchRecentlyPlayed = async ():Promise<RecentlyPlayed[]> =>{
+const fetchRecentlyPlayed = async ():Promise<AudioData[]> =>{
   const client = await getClient()
   const {data} = await client.get('/history/recently-played')
   return data.audios
@@ -168,6 +168,25 @@ export const useFetchRecommendedPlaylist = () =>{
       const query =  useQuery({
       queryKey: ['recommended-playlist'],
       queryFn: () => fetchRecommendedPlaylist(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+const fetchIsFavourite = async (id: string):Promise<boolean> =>{
+  const client = await getClient()
+  const {data} = await client.get('favourite/is-fav?audioId='+id)
+  return Boolean(data.result)
+}
+
+export const useFetchIsFavourite = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['favourite', id],
+      queryFn: () => fetchIsFavourite(id),
+      enabled: id ? true : false
     })
      useEffect(() => {
       if (query.error) {

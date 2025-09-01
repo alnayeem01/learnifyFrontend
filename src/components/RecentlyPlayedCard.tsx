@@ -3,19 +3,23 @@ import { View, StyleSheet, Image, Pressable, Text } from 'react-native'
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../store/player';
 import colors from '../utils/colors';
+import PlayAnimation from '../ui/PlayAnimation';
 
 
 interface Props {
     title: string,
-    poster: string
+    poster: string |undefined
     onPress(): void
+    isPlaying:boolean
 }
-const RecentlyPlayedCard: FC<Props> = ({ onPress, poster, title }) => {
-    const { onGoingAudio } = useSelector(getPlayerState)
-    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
+const RecentlyPlayedCard: FC<Props> = ({ onPress, poster, title, isPlaying }) => {
+    const source = poster ? { uri: poster } : require('../../assets/images/music.jpg')
     return (
         <Pressable onPress={onPress} style={styles.container}>
-            <Image source={source} style={styles.poster} />
+            <View>
+                <Image source={source} style={styles.poster} />
+                <PlayAnimation visible={isPlaying} />
+            </View>
             <View style={styles.titleContainer}>
                 <Text style={styles.title} numberOfLines={2} ellipsizeMode='tail' >{title}</Text>
             </View>

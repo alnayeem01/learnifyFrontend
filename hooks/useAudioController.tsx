@@ -43,13 +43,13 @@ const useAudioController = () => {
         if (!isReady) {
             // when playing audio for tha first time : Play Audio
             await updateQueue(data);
+            //update the state onGoingAudio
+            dispatch(updateOnGoingAudio(item));
             //extract the id of the item that shold be played for audioData array
             const index = data.findIndex((audio) => audio.id === item.id);
             // use skip method form track-player to jump to this track than play the track 
             await TrackPlayer.skip(index);
             await TrackPlayer.play();
-            //update the state onGoingAudio
-            dispatch(updateOnGoingAudio(item));
             // passed the audioData array 
             return dispatch(updateOnGoingList(data))
         };

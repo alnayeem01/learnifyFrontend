@@ -11,6 +11,7 @@ import { useProgress } from 'react-native-track-player';
 import { mapRange } from '../utils/math';
 import AudioPlayer from '../ui/AudioPlayer';
 import CurrentAudioList from './CurrentAudioList';
+import { useFetchIsFavourite } from '../../hooks/query';
 
 
 interface Props {
@@ -23,6 +24,10 @@ const MiniAudioPlayer: FC<Props> = props => {
     const [showCurrent, setShowCurrent] = useState(false);
     const { onGoingAudio } = useSelector(getPlayerState);
     const { isPlaying, togglePlayPause, isBusy } = useAudioController();
+
+    const {data : isFav} = useFetchIsFavourite(onGoingAudio?.id ||'')
+    console.log(isFav)
+
     // useProgress hook from react-native-track-player 
     const progress = useProgress()
     const source = onGoingAudio?.poster?.url ? { uri: onGoingAudio.poster?.url } : require('../../assets/images/music.jpg')
@@ -63,7 +68,7 @@ const MiniAudioPlayer: FC<Props> = props => {
                     <Text style={styles.owner}>{onGoingAudio?.owner.name}</Text>
                 </Pressable>
                 <Pressable style={{ paddingHorizontal: 10 }}>
-                    <AntDesign name='hearto' size={24} color={colors.CONTRAST} />
+                    {!isFav? <AntDesign name='hearto' size={24} color={colors.CONTRAST} />:<AntDesign name='heart' size={24} color={colors.CONTRAST} />}
                 </Pressable>
                 {!isBusy ?
                     <PlayPauseBtn

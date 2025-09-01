@@ -9,6 +9,7 @@ import colors from '../utils/colors';
 import ProfileContainer from '../components/ProfileContainer';
 import { useSelector } from 'react-redux';
 import { getAuthState } from '../store/auth';
+import AppView from '../components/AppView';
 
 interface Props {
 }
@@ -17,17 +18,17 @@ const Profile: FC<Props> = props => {
   const {profile} = useSelector(getAuthState)
   return (
     <View style={styles.container}>
-      <ProfileContainer profile={profile} />
-      <Tab.Navigator screenOptions={{
-        tabBarStyle:styles.tabBarStyle,
-        tabBarLabelStyle: styles.tabBarLabelStyle
-      }}>
-        <Tab.Screen name='Uploads' component={UploadsTab} />
-        <Tab.Screen name='Playlist' component={PlaylistTab} /> 
-        <Tab.Screen name='Favourites' component={FavouriteTab} />
-         <Tab.Screen name='History' component={HistoryTab} />
-      </Tab.Navigator>
-    </View>
+        <ProfileContainer profile={profile} />
+        <Tab.Navigator screenOptions={{
+          tabBarStyle:styles.tabBarStyle,
+          tabBarLabelStyle: styles.tabBarLabelStyle
+        }}>
+          <Tab.Screen name='Uploads' component={UploadsTab} />
+          <Tab.Screen name='Playlist' component={PlaylistTab} /> 
+          <Tab.Screen name='Favourites' component={FavouriteTab} />
+          <Tab.Screen name='History' component={HistoryTab} />
+        </Tab.Navigator>
+      </View>
   )
 };
 

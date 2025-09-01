@@ -4,12 +4,17 @@ import { useFetchRecentlyPlayed } from '../../hooks/query';
 import colors from '../utils/colors';
 import RecentlyPlayedCard from './RecentlyPlayedCard';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
+import useAudioController from '../../hooks/useAudioController';
+import { useSelector } from 'react-redux';
+import { getPlayerState } from '../store/player';
 
 
 interface Props {
 
 }
 const RecentlyPlayed: FC<Props> = props => {
+    const {onAudioPress} = useAudioController();
+    const {onGoingAudio} = useSelector(getPlayerState)
     const dumyData = new Array(6).fill(null)
     const { data, isLoading } = useFetchRecentlyPlayed()
     if (isLoading) {
@@ -37,7 +42,13 @@ const RecentlyPlayed: FC<Props> = props => {
                 data?.map((item, index) => {
                     return (
                         // KEY : added index with the item id to avoid passing same key and enforce unique key.
-                        <RecentlyPlayedCard key={item.id +index} title={item.title} poster={item.poster} onPress={() => { }} />
+                        <RecentlyPlayedCard 
+                            key={item.id +index} 
+                            title={item.title} 
+                            poster={item.poster?.url} 
+                            onPress={() => onAudioPress(item,data)} 
+                            isPlaying={item.id === onGoingAudio?.id}
+                        />
                     )
                 })
             }

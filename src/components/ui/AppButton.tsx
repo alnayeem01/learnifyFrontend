@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
      
     },
     title: {
-        color: colors.CONTRAST,
+        color: 'white',
         fontSize: 18
     }
 });

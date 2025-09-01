@@ -35,17 +35,3 @@ export interface History{
     id:string,
     audios: historyAudio[]
   }
-export interface RecentlyPlayed{
-    about: string,
-    category : string,
-    date: string,
-    file:string,
-    id: string,
-    owner:{
-        name: string,
-        id: string
-    },
-    poster: string,
-    progress: number,
-    title: string
-}
