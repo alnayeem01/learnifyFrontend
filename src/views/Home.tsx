@@ -13,9 +13,11 @@ import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
-import TrackPlayer from 'react-native-track-player';
 import useAudioController from '../../hooks/useAudioController';
 import AppView from '../components/AppView';
+import RecentlyPlayed from '../components/RecentlyPlayed';
+import RecommendedPlaylist from '../components/RecommendedPlaylist';
+import { updatePlaylistVisibility, updateSelectedListID } from '../store/PlaylistModal';
 
 
 
@@ -23,8 +25,6 @@ import AppView from '../components/AppView';
 interface Props { }
 
 const Home: FC<Props> = props => {
-
-
   const [showOptions, setShowOptions] = useState<boolean>(false)
   const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
   const [showPlayListFormModal, setShowPlayListFormModal] = useState<boolean>(false)
@@ -90,11 +90,17 @@ const Home: FC<Props> = props => {
     }
   }
 
+  const handleOnListPress = (playlsit : PlayList)=>{
+    dispatch(updateSelectedListID(playlsit.id))
+    dispatch(updatePlaylistVisibility(true))
+  }
+
 
   
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>
+        <RecentlyPlayed />
         <LatestUploads
           onAudioLongPress={handleOnLongPress}
           onAudioPress={onAudioPress}
@@ -105,6 +111,7 @@ const Home: FC<Props> = props => {
           onAudioPress={onAudioPress}
           //passing the hook : The Data fetched in LatestAudion will use the controller.
         />
+        <RecommendedPlaylist onListPress={handleOnListPress} />
         <OptionsModal
           visible={showOptions}
           onRequestClose={() => {
@@ -151,6 +158,7 @@ const Home: FC<Props> = props => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    
   },
   optionContainer: {
     flexDirection: 'row',

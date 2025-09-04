@@ -6,39 +6,62 @@ import EmptyRecords from '../ui/EmptyRecords';
 import AudioListItem from '../ui/AudioListItem';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
+import useAudioController from '../../../hooks/useAudioController';
+import AppView from '../AppView';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import colors from '../../utils/colors';
 
 
-interface Props{
+interface Props {
 
 }
-const FavouriteTab:FC<Props> = props => {
-  const {data, isLoading} = useFetchFavourites()
-  const {onGoingAudio}= useSelector(getPlayerState)
-
-  if(isLoading){
-    return(<AudioListLoadingUi />)
-  };
-  
-  if(!data?.length){
-    return <EmptyRecords title="There is no audio's in favourite playlist." />
+const FavouriteTab: FC<Props> = props => {
+  const { data, isLoading, isFetching } = useFetchFavourites()
+  const { onGoingAudio } = useSelector(getPlayerState)
+  const { onAudioPress } = useAudioController();
+  const queryClient = useQueryClient()
+  if (isLoading) {
+    return (<AudioListLoadingUi />)
   };
 
-  return(
-    <ScrollView style={styles.container}>
-     {data?.map((item)=>{
-      return (
-        <AudioListItem isPlaying={item.id === onGoingAudio?.id} key={item.id} audio={item} />
-      )
-     })}
-    </ScrollView>
-  ) 
+  const handleOnRefresh =async()=>{
+    await queryClient.invalidateQueries({queryKey:['favourite']})
+  }
+
+  return (
+    <AppView>
+      <ScrollView 
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={handleOnRefresh} tintColor={colors.CONTRAST} />
+        }
+      >
+        {/* if data is empty */}
+        {
+          (!data?.length) ?  
+          <EmptyRecords title="There is no audio's in favourite playlist." /> : null 
+        }
+        {/* if data is not empty */}
+        {data?.map((item) => {
+          return (
+            <AudioListItem
+              isPlaying={item.id === onGoingAudio?.id}
+              key={item.id}
+              audio={item}
+              onPress={() => onAudioPress(item, data)}
+            />
+          )
+        })}
+      </ScrollView>
+    </AppView>
+  )
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-      padding: 10
-    }
+  container: {
+    padding: 10
+  }
 });
 
 export default FavouriteTab;

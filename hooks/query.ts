@@ -4,8 +4,8 @@ import catchAsyncError from "../src/api/catchError";
 import { updateNotification } from "../src/store/notificaton";
 import { useQuery } from "@tanstack/react-query";
 import {getClient} from "../src/api/client";
-import { AudioData, History, PlayList } from "../src/@types/audio";
-import { getFromAsyncStorage, keys } from "../src/utils/asyncStorage";
+import { AudioData, CompletePlaylist, History, PlayList, } from "../src/@types/audio";
+
 
 
 const fetchLatest = async () : Promise<AudioData[]> =>{
@@ -136,3 +136,166 @@ export const useFetchHistory = () =>{
     }, [query.error]);
     return query
 }
+
+const fetchRecentlyPlayed = async ():Promise<AudioData[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('/history/recently-played')
+  return data.audios
+}
+
+export const useFetchRecentlyPlayed = () =>{
+
+      const query =  useQuery({
+      queryKey: ['recently-played'],
+      queryFn: () => fetchRecentlyPlayed(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchRecommendedPlaylist = async ():Promise<PlayList[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('profile/auto-generated-playlist')
+  return data.playlist
+}
+
+export const useFetchRecommendedPlaylist = () =>{
+
+      const query =  useQuery({
+      queryKey: ['recommended-playlist'],
+      queryFn: () => fetchRecommendedPlaylist(),
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+const fetchIsFavourite = async (id: string):Promise<boolean> =>{
+  const client = await getClient()
+  const {data} = await client.get('favourite/is-fav?audioId='+id)
+  return Boolean(data.result)
+}
+
+export const useFetchIsFavourite = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['favourite', id],
+      queryFn: () => fetchIsFavourite(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchPublicProfile = async (id: string):Promise<PublicProfile> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/info/'+id)
+  return data?.profile
+}
+
+export const useFetchPulicProfile = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['public-Profile', id],
+      queryFn: () => fetchPublicProfile(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+
+const fetchPublicUploads = async (id: string):Promise<AudioData[]> =>{
+  const client = await getClient()
+  const {data} = await client.get(`/profile/uploads/${id}`)
+  return data.audio
+}
+
+export const useFetchPublicUploads = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['public-uploads', id],
+      queryFn: () => fetchPublicUploads(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchPublicPlaylist = async (id: string):Promise<PlayList[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/playlist-audios/'+id)
+  return data.playlist
+}
+
+export const useFetchPublicPlaylist = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['public-playlist', id],
+      queryFn: () => fetchPublicPlaylist(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+
+const fetchPlaylistAudio = async (id: string):Promise<CompletePlaylist> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/playlist-audios/'+id)
+  return data.list
+}
+
+export const useFetchPlaylistAudio = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['playlist-audios', id],
+      queryFn: () => fetchPlaylistAudio(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+const fetchIsFollowing = async (id: string):Promise<boolean> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/is-following/'+id)
+  return data.status
+}
+
+export const useFetchIsFollowing = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['is-following', id],
+      queryFn: () => fetchIsFollowing(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+

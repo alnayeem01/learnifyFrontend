@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     container: {
         width: 100,
         marginRight: 15,
-        padding: 10,
+
     },
     poster: {
         height: 100,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     title: {
         color: colors.CONTRAST,
         fontSize: 20,
-        paddingVertical: 10
+        
     }
 });
 

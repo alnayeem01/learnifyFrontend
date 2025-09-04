@@ -35,3 +35,10 @@ export interface History{
     id:string,
     audios: historyAudio[]
   }
+
+  export interface CompletePlaylist{
+    id:string,
+    title: string,
+    audios: AudioData[]
+  }
+

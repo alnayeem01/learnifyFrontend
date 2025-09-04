@@ -19,7 +19,6 @@ const HistoryTab: FC<Props> = props => {
   const { data, isLoading, isFetching } = useFetchHistory();
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
-
   const reomoveMutate = useMutation({
     // mutationFn = the actual async call to your API that removes histories
     mutationFn: async (histories) => await removeHistories(histories),
@@ -124,7 +123,10 @@ const HistoryTab: FC<Props> = props => {
         }
       >
         {/* empty data UI */}
-        {!data?.length ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><EmptyRecords title='There is no history!' /></View> : null}
+        {!data || !data[0]?.audios?.length  ? 
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <EmptyRecords title='There is no history!' />
+        </View> : null}
 
         {/* loop over items in history  */}
         {data?.map((item, index) => {
@@ -134,7 +136,8 @@ const HistoryTab: FC<Props> = props => {
               <Text style={styles.date}>{item.id}</Text>
               {/* loop over the fierst audios array in first item in history */}
               <View style={styles.listcontainer}>
-                {item.audios.map((audio, index) => {
+                {
+                item?.audios?.map((audio, index) => {
                   return (
                     <Pressable
                       onLongPress={() => handleOnLongPress(audio)}

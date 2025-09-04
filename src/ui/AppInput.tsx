@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 25,
     color: colors.CONTRAST,
+    padding: 15,
   },
 });
 

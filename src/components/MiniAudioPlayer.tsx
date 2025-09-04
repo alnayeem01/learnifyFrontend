@@ -11,6 +11,13 @@ import { useProgress } from 'react-native-track-player';
 import { mapRange } from '../utils/math';
 import AudioPlayer from '../ui/AudioPlayer';
 import CurrentAudioList from './CurrentAudioList';
+import { useFetchIsFavourite } from '../../hooks/query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getClient } from '../api/client';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { HomeNavigatorStackParamList, ProfileNavigatorStackParamList, PublicProfileTabParamList, TabNavigatorParamList } from '../@types/navigation';
+import { getAuthState } from '../store/auth';
+import { Screen } from 'react-native-screens';
 
 
 interface Props {
@@ -22,10 +29,35 @@ const MiniAudioPlayer: FC<Props> = props => {
     const [playerVisibility, setPlayerVisibiilty] = useState(false);
     const [showCurrent, setShowCurrent] = useState(false);
     const { onGoingAudio } = useSelector(getPlayerState);
+     const { profile } = useSelector(getAuthState);
     const { isPlaying, togglePlayPause, isBusy } = useAudioController();
+    const {navigate} = useNavigation<NavigationProp<TabNavigatorParamList  & HomeNavigatorStackParamList>>()
+
+    const { data: isFav } = useFetchIsFavourite(onGoingAudio?.id || '')
+
     // useProgress hook from react-native-track-player 
     const progress = useProgress()
     const source = onGoingAudio?.poster?.url ? { uri: onGoingAudio.poster?.url } : require('../../assets/images/music.jpg')
+
+    const queryClient = useQueryClient();
+
+    const toggleIsFav = async (id: string)=>{
+        if(!id) return;
+        const client = await getClient();
+        const data = await client.post('/favourite?audioId='+id)
+        await queryClient.invalidateQueries({queryKey: ['favourite']})
+    }
+
+    const favouriteMutation = useMutation({
+        // mutationFn = the actual async call to your API that removes histories
+        mutationFn: async (id: string) => await toggleIsFav(id),
+        // onMutate runs immediately when mutation is triggered (before server responds)
+        // we use it for an "optimistic update" → update the cache instantly for snappy UI
+        onMutate: (id: string) => {
+            queryClient.setQueryData<boolean>(['favourite', onGoingAudio?.id], (oldData) => !oldData
+            )
+        }
+    })
 
     const showPlayerModal = () => {
         setPlayerVisibiilty(true)
@@ -40,6 +72,17 @@ const MiniAudioPlayer: FC<Props> = props => {
     const handleOnListOptionPress = () => {
         closePlayerModal();
         setShowCurrent(true)
+    }
+    const handleOnProfileLinkPress = ()=>{
+        closePlayerModal();
+        if(onGoingAudio?.owner.id === profile?.id) {
+            //if music ownwer is logged in user taek to his personal profile
+           navigate('ProfileNavigator');
+        }else{
+            navigate('PublicProfile',{
+                ProfileId : onGoingAudio?.owner.id || ''
+            })
+        }
     }
     return (
         <>
@@ -62,8 +105,11 @@ const MiniAudioPlayer: FC<Props> = props => {
                     <Text style={styles.title}>{onGoingAudio?.title}</Text>
                     <Text style={styles.owner}>{onGoingAudio?.owner.name}</Text>
                 </Pressable>
-                <Pressable style={{ paddingHorizontal: 10 }}>
-                    <AntDesign name='hearto' size={24} color={colors.CONTRAST} />
+                <Pressable 
+                    style={{ paddingHorizontal: 10 }}
+                    onPress={()=> favouriteMutation.mutate(onGoingAudio?.id || '')}
+                >
+                    {!isFav ? <AntDesign name='hearto' size={24} color={colors.CONTRAST} /> : <AntDesign name='heart' size={24} color={colors.CONTRAST} />}
                 </Pressable>
                 {!isBusy ?
                     <PlayPauseBtn
@@ -74,6 +120,7 @@ const MiniAudioPlayer: FC<Props> = props => {
                 }
             </View>
             <AudioPlayer
+                onPrfileLinkPress={handleOnProfileLinkPress}
                 visible={playerVisibility}
                 onRequestClose={closePlayerModal} onListOptionPress={handleOnListOptionPress}
             />
@@ -87,9 +134,9 @@ const MiniAudioPlayer: FC<Props> = props => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: '100%',
+        width: '100%',
         height: MiniPlayerHeight,
-        backgroundColor: colors.OVERLAY,
+        backgroundColor: 'rgba(29, 13, 13, 0.8)',
         padding: 5,
         paddingLeft: 5,
         flexDirection: 'row',

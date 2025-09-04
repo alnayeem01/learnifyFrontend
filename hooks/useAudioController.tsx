@@ -4,7 +4,6 @@ import { AudioData } from "../src/@types/audio"
 import { useDispatch, useSelector } from "react-redux";
 import { getPlayerState, updateOnGoingAudio, updateOnGoingList } from "../src/store/player";
 import deepEqual from "deep-equal";
-import { getPosition } from "react-native-track-player/lib/src/trackPlayer";
 import { useEffect } from "react";
 
 let ready=false;
@@ -36,23 +35,21 @@ const useAudioController = () => {
     const { onGoingAudio, onGoingList } = useSelector(getPlayerState); //from redux store
     const dispatch = useDispatch();
     const isReady = playbackState !== State.None;
-    console.log(isReady)
     const isPlaying = playbackState === State.Playing;
     const isPaused = playbackState === State.Paused;
     const isBusy = playbackState === State.Buffering || playbackState === State.Loading
-        ;
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
 
         if (!isReady) {
             // when playing audio for tha first time : Play Audio
             await updateQueue(data);
+            //update the state onGoingAudio
+            dispatch(updateOnGoingAudio(item));
             //extract the id of the item that shold be played for audioData array
             const index = data.findIndex((audio) => audio.id === item.id);
             // use skip method form track-player to jump to this track than play the track 
             await TrackPlayer.skip(index);
             await TrackPlayer.play();
-            //update the state onGoingAudio
-            dispatch(updateOnGoingAudio(item));
             // passed the audioData array 
             return dispatch(updateOnGoingList(data))
         };
@@ -190,7 +187,6 @@ const useAudioController = () => {
         onPreviousPress,
         setPlaybackRate
     }
-
 };
 
 
