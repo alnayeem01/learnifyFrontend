@@ -23,3 +23,9 @@ export type ProfileNavigatorStackParamList = {
     ProfileSettings: undefined;
       Verification: {userInfo: NewUserRespones};
 }
+
+// This is the type declaration for navigation of ProfileNavigator
+export type HomeNavigatorStackParamList = {
+    HomeScreen: undefined;
+    PublicProfile: {ProfileId: string };
+}

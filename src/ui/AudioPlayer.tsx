@@ -18,10 +18,12 @@ import PlayerController from './PlayerController';
 import Loader from './Loader';
 import PlayBackRateSelector from './PlayBackRateSelector';
 import AudioIfnoContainer from '../components/AudioIfnoContainer';
+
 interface Props {
     visible: boolean;
     onRequestClose(): void;
     onListOptionPress?(): void
+    onPrfileLinkPress(): void
 }
 
 const formattedDuration = (duration = 0) => {
@@ -30,11 +32,8 @@ const formattedDuration = (duration = 0) => {
     })
 };
 
-const onPlayBackRatePress = () => {
 
-}
-
-const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress }) => {
+const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress, onPrfileLinkPress }) => {
     const [showAudioInfo, setShowAudioInfo] = useState(false);
     const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
     const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress, seekTO, setPlaybackRate } = useAudioController()
@@ -66,7 +65,7 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress }) 
             <View style={styles.contentContainer}>
                 <Text style={styles.title}>{onGoingAudio?.title}</Text>
                 {/* AppLink : Later can pass onPress to open profile */}
-                <AppLink title={onGoingAudio?.owner.name || ""} />
+                <AppLink  onPress={onPrfileLinkPress} title={onGoingAudio?.owner.name || ""} />
                 <View style={styles.durationContainer}>
                     <Text style={styles.duration}>{formatDuration(position * 1000)}</Text>
                     <Text style={styles.duration}>{formatDuration(duration * 1000)}</Text>

@@ -195,3 +195,45 @@ export const useFetchIsFavourite = (id: string) =>{ // because each favourite wi
     }, [query.error]);
     return query
 }
+
+const fetchPublicProfile = async (id: string):Promise<PublicProfile> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/info/'+id)
+  return data?.profile
+}
+
+export const useFetchPulicProfile = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['public-Profile', id],
+      queryFn: () => fetchPublicProfile(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
+
+const fetchPublicUploads = async (id: string):Promise<AudioData[]> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/uploads/'+id)
+  return data.audio
+}
+
+export const useFetchPublicUploads = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['public-uploads'],
+      queryFn: () => fetchPublicUploads(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+

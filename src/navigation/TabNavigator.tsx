@@ -6,6 +6,7 @@ import colors from "../utils/colors"
 import AntDesign from "react-native-vector-icons/AntDesign"
 import Entypo from "react-native-vector-icons/Entypo"
 import ProfileNavigator from "./ProfileNavigator"
+import HomeNavigator from "./HomeNavigator"
 
 
 
@@ -20,7 +21,7 @@ const TabNavigator = () => {
             }
             }} 
         >
-            <Tab.Screen name="HomeScreen" component={Home}  options={{
+            <Tab.Screen name="HomeNavigator" component={HomeNavigator}  options={{
                 tabBarIcon: (props)=>{
                     return <AntDesign name="home" color={props.color} size={props.size}/>
                 },

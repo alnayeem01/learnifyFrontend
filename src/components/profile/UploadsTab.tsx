@@ -23,12 +23,12 @@ const UploadsTab: FC<Props> = props => {
   if (isLoading)
     return <AudioListLoadingUi items={15} />
 
-  // //if there is no data insdie we will show this in UI 
+  // //if there is no data insdie we will show this in UI
   if (!data?.length)
     return <EmptyRecords title="There is no audio's." />
-
-  //passing the audio to our component AudioListItem component 
+  //passing the audio to our component AudioListItem component
   return (
+    <AppView>
       <ScrollView style={styles.container}>
         {data?.map((item) => {
           return (
@@ -41,13 +41,14 @@ const UploadsTab: FC<Props> = props => {
           )
         })}
       </ScrollView>
+    </AppView>
   )
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 10
+    padding: 10,
+    paddingBottom: 480,
   }
 });
 

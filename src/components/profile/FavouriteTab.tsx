@@ -8,26 +8,41 @@ import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
 import useAudioController from '../../../hooks/useAudioController';
 import AppView from '../AppView';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import colors from '../../utils/colors';
 
 
 interface Props {
 
 }
 const FavouriteTab: FC<Props> = props => {
-  const { data, isLoading } = useFetchFavourites()
+  const { data, isLoading, isFetching } = useFetchFavourites()
   const { onGoingAudio } = useSelector(getPlayerState)
   const { onAudioPress } = useAudioController();
+  const queryClient = useQueryClient()
   if (isLoading) {
     return (<AudioListLoadingUi />)
   };
 
-  if (!data?.length) {
-    return <EmptyRecords title="There is no audio's in favourite playlist." />
-  };
+  const handleOnRefresh =async()=>{
+    await queryClient.invalidateQueries({queryKey:['favourite']})
+  }
 
   return (
- 
-      <ScrollView style={styles.container}>
+    <AppView>
+      <ScrollView 
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={handleOnRefresh} tintColor={colors.CONTRAST} />
+        }
+      >
+        {/* if data is empty */}
+        {
+          (!data?.length) ?  
+          <EmptyRecords title="There is no audio's in favourite playlist." /> : null 
+        }
+        {/* if data is not empty */}
         {data?.map((item) => {
           return (
             <AudioListItem
@@ -39,12 +54,12 @@ const FavouriteTab: FC<Props> = props => {
           )
         })}
       </ScrollView>
+    </AppView>
   )
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 10
   }
 });

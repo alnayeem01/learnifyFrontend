@@ -19,7 +19,6 @@ const HistoryTab: FC<Props> = props => {
   const { data, isLoading, isFetching } = useFetchHistory();
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
-  console.log(data)
   const reomoveMutate = useMutation({
     // mutationFn = the actual async call to your API that removes histories
     mutationFn: async (histories) => await removeHistories(histories),

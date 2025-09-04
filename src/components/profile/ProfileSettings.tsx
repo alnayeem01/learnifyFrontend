@@ -122,7 +122,6 @@ const ProfileSettings: FC<Props> = props => {
       },
       {
         onPress(value) {
-          console.log(value)
         },
         style: 'cancel', // this style only works for IOS
         text: 'cancel'
