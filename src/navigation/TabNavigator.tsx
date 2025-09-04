@@ -7,10 +7,11 @@ import AntDesign from "react-native-vector-icons/AntDesign"
 import Entypo from "react-native-vector-icons/Entypo"
 import ProfileNavigator from "./ProfileNavigator"
 import HomeNavigator from "./HomeNavigator"
+import { TabNavigatorParamList } from "../@types/navigation"
 
 
 
-const Tab = createBottomTabNavigator()
+const Tab = createBottomTabNavigator<TabNavigatorParamList>()
 
 const TabNavigator = () => {
     return (

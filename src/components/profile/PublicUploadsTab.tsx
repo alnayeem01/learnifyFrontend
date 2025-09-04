@@ -8,13 +8,17 @@ import AudioListItem from '../ui/AudioListItem';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
 import useAudioController from '../../../hooks/useAudioController';
+import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
+import { PublicProfileTabParamList } from '../../@types/navigation';
 
 
-interface Props {
-    route: any;
-}
+type Props = MaterialTopTabScreenProps<PublicProfileTabParamList, 'PublicUploads'>
+
 const PublicUploadsTab: FC<Props> = props => {
-    const { data, isLoading } = useFetchPublicUploads(props.route.params);
+    const id = props.route.params.ProfileId
+    console.log('if from child',id)
+    const { data, isLoading } = useFetchPublicUploads(id);
+    console.log('data from uploads',data)
     const {onGoingAudio} = useSelector(getPlayerState);
     const {onAudioPress}  = useAudioController();
     //Loading ui for auiolistItem

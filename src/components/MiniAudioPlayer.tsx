@@ -15,7 +15,9 @@ import { useFetchIsFavourite } from '../../hooks/query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getClient } from '../api/client';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { HomeNavigatorStackParamList } from '../@types/navigation';
+import { HomeNavigatorStackParamList, ProfileNavigatorStackParamList, PublicProfileTabParamList, TabNavigatorParamList } from '../@types/navigation';
+import { getAuthState } from '../store/auth';
+import { Screen } from 'react-native-screens';
 
 
 interface Props {
@@ -27,8 +29,9 @@ const MiniAudioPlayer: FC<Props> = props => {
     const [playerVisibility, setPlayerVisibiilty] = useState(false);
     const [showCurrent, setShowCurrent] = useState(false);
     const { onGoingAudio } = useSelector(getPlayerState);
+     const { profile } = useSelector(getAuthState);
     const { isPlaying, togglePlayPause, isBusy } = useAudioController();
-    const {navigate} = useNavigation<NavigationProp<any>>()
+    const {navigate} = useNavigation<NavigationProp<TabNavigatorParamList  & HomeNavigatorStackParamList>>()
 
     const { data: isFav } = useFetchIsFavourite(onGoingAudio?.id || '')
 
@@ -71,10 +74,15 @@ const MiniAudioPlayer: FC<Props> = props => {
         setShowCurrent(true)
     }
     const handleOnProfileLinkPress = ()=>{
-        closePlayerModal()
-        navigate('PublicProfile',{
-            ProfileId : onGoingAudio?.owner.id || ''
-        })
+        closePlayerModal();
+        if(onGoingAudio?.owner.id === profile?.id) {
+            //if music ownwer is logged in user taek to his personal profile
+           navigate('ProfileNavigator');
+        }else{
+            navigate('PublicProfile',{
+                ProfileId : onGoingAudio?.owner.id || ''
+            })
+        }
     }
     return (
         <>

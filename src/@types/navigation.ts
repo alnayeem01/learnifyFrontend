@@ -29,3 +29,14 @@ export type HomeNavigatorStackParamList = {
     HomeScreen: undefined;
     PublicProfile: {ProfileId: string };
 }
+
+export type PublicProfileTabParamList = {
+    PublicUploads: {ProfileId: string };
+    PublicPlaylist: {ProfileId: string };
+}
+
+export type TabNavigatorParamList = {
+   HomeNavigator: undefined;
+   ProfileNavigator: undefined;
+   UploadScreen: undefined;
+}

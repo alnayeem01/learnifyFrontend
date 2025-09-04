@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import AppView from '../components/AppView';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeNavigatorStackParamList } from '../@types/navigation';
+import { HomeNavigatorStackParamList, PublicProfileTabParamList } from '../@types/navigation';
 import { useFetchPulicProfile } from '../../hooks/query';
 import PublicProfileContainer from '../components/profile/PublicProfileContainer';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -12,7 +12,7 @@ import PublicPlayListTab from '../components/profile/PublicPlayListTab';
 
 
 type Props = NativeStackScreenProps<HomeNavigatorStackParamList, 'PublicProfile'>
-const Tab = createMaterialTopTabNavigator();
+const Tab = createMaterialTopTabNavigator<PublicProfileTabParamList>();
 const PUblicProfile: FC<Props> = (Props) => {
     const { ProfileId } = Props.route.params;
     const { data } = useFetchPulicProfile(ProfileId);
@@ -33,7 +33,7 @@ const PUblicProfile: FC<Props> = (Props) => {
                     name='PublicPlaylist' 
                     component={PublicPlayListTab}
                     options={{tabBarLabel: 'Playlist'}} 
-                    initialParams={{ProfileId}}
+                    initialParams={{ProfileId}} 
                 />
             </Tab.Navigator>
         </>
