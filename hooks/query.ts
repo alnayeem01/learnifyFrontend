@@ -278,4 +278,24 @@ export const useFetchPlaylistAudio = (id: string) =>{ // because each favourite 
     return query
 }
 
+const fetchIsFollowing = async (id: string):Promise<boolean> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/is-following/'+id)
+  return data.status
+}
+
+export const useFetchIsFollowing = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['is-following', id],
+      queryFn: () => fetchIsFollowing(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
 
