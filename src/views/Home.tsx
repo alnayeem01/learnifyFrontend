@@ -17,6 +17,7 @@ import useAudioController from '../../hooks/useAudioController';
 import AppView from '../components/AppView';
 import RecentlyPlayed from '../components/RecentlyPlayed';
 import RecommendedPlaylist from '../components/RecommendedPlaylist';
+import { updatePlaylistVisibility, updateSelectedListID } from '../store/PlaylistModal';
 
 
 
@@ -89,6 +90,11 @@ const Home: FC<Props> = props => {
     }
   }
 
+  const handleOnListPress = (playlsit : PlayList)=>{
+    dispatch(updateSelectedListID(playlsit.id))
+    dispatch(updatePlaylistVisibility(true))
+  }
+
 
   
   return (
@@ -105,7 +111,7 @@ const Home: FC<Props> = props => {
           onAudioPress={onAudioPress}
           //passing the hook : The Data fetched in LatestAudion will use the controller.
         />
-        <RecommendedPlaylist />
+        <RecommendedPlaylist onListPress={handleOnListPress} />
         <OptionsModal
           visible={showOptions}
           onRequestClose={() => {
