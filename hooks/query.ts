@@ -4,7 +4,7 @@ import catchAsyncError from "../src/api/catchError";
 import { updateNotification } from "../src/store/notificaton";
 import { useQuery } from "@tanstack/react-query";
 import {getClient} from "../src/api/client";
-import { AudioData, History, PlayList, } from "../src/@types/audio";
+import { AudioData, CompletePlaylist, History, PlayList, } from "../src/@types/audio";
 
 
 
@@ -239,7 +239,7 @@ export const useFetchPublicUploads = (id: string) =>{ // because each favourite 
 
 const fetchPublicPlaylist = async (id: string):Promise<PlayList[]> =>{
   const client = await getClient()
-  const {data} = await client.get('/profile/playlist/'+id)
+  const {data} = await client.get('/profile/playlist-audios/'+id)
   return data.playlist
 }
 
@@ -256,4 +256,26 @@ export const useFetchPublicPlaylist = (id: string) =>{ // because each favourite
     }, [query.error]);
     return query
 }
+
+
+const fetchPlaylistAudio = async (id: string):Promise<CompletePlaylist> =>{
+  const client = await getClient()
+  const {data} = await client.get('/profile/playlist-audios/'+id)
+  return data.list
+}
+
+export const useFetchPlaylistAudio = (id: string) =>{ // because each favourite will be unique we are accepting id here .
+      const query =  useQuery({
+      queryKey: ['playlist-audios', id],
+      queryFn: () => fetchPlaylistAudio(id),
+      enabled: id ? true : false
+    })
+     useEffect(() => {
+      if (query.error) {
+        const errorMessage = catchAsyncError(query.error);
+      }
+    }, [query.error]);
+    return query
+}
+
 
