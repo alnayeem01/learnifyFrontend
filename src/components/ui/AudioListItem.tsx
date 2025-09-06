@@ -11,8 +11,9 @@ interface Props {
     audio: AudioData,
     onPress?(): void,
     isPlaying: boolean
+    onLongPress?(): void
 }
-const AudioListItem: FC<Props> = ({audio, onPress,isPlaying}) => {
+const AudioListItem: FC<Props> = ({audio, onPress,isPlaying,onLongPress }) => {
 
     //helper function to dynamically chose iamge if no image passed then we pick our loacl image 
     const getsource = (poster?: string) => {
@@ -20,9 +21,9 @@ const AudioListItem: FC<Props> = ({audio, onPress,isPlaying}) => {
     };
 
     return (
-        <Pressable onPress={onPress} style={styles.listItem}>
+        <Pressable onLongPress={onLongPress} onPress={onPress} style={styles.listItem}>
             <View>
-                <Image source={getsource(audio.poster?.url)} style={styles.poster} />
+                <Image source={getsource(audio.poster)} style={styles.poster} />
                 <PlayAnimation visible={isPlaying} />
             </View>
             <View style={styles.titleContainer}>

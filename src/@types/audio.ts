@@ -7,10 +7,7 @@ export interface AudioData {
     about: string;
     category: categoriesTypes;
     file: string;
-    poster?: {
-        url : string,
-        id: string
-    },
+    poster?: string,
     owner: {
         name: string;
         id: string;

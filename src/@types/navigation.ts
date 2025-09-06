@@ -1,42 +1,39 @@
-
+import { AudioData } from "./audio";
 
 export interface NewUserRespones {
-    id: string;
-    name: string;
-    email: string;
-
+  id: string;
+  name: string;
+  email: string;
 }
-
 
 export type AuthStackParamList = {
-    SignUp: undefined;
-    SignIn: undefined;
-    LostPassword: undefined;
-    Verification: {userInfo: NewUserRespones};
-}
-
-
+  SignUp: undefined;
+  SignIn: undefined;
+  LostPassword: undefined;
+  Verification: {userInfo: NewUserRespones};
+};
 
 // This is the type declaration for navigation of ProfileNavigator
 export type ProfileNavigatorStackParamList = {
-    Profile: undefined;
-    ProfileSettings: undefined;
-      Verification: {userInfo: NewUserRespones};
-}
+  Profile: undefined;
+  ProfileSettings: undefined;
+  Verification: {userInfo: NewUserRespones};
+  UpdateAudio: {item: AudioData};
+};
 
 // This is the type declaration for navigation of ProfileNavigator
 export type HomeNavigatorStackParamList = {
-    HomeScreen: undefined;
-    PublicProfile: {ProfileId: string };
-}
+  HomeScreen: undefined;
+  PublicProfile: {ProfileId: string};
+};
 
 export type PublicProfileTabParamList = {
-    PublicUploads: {ProfileId: string };
-    PublicPlaylist: {ProfileId: string };
-}
+  PublicUploads: {ProfileId: string};
+  PublicPlaylist: {ProfileId: string};
+};
 
 export type TabNavigatorParamList = {
-   HomeNavigator: undefined;
-   ProfileNavigator: undefined;
-   UploadScreen: undefined;
-}
+  HomeNavigator: undefined;
+  ProfileNavigator: undefined;
+  UploadScreen: undefined;
+};

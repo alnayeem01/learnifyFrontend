@@ -39,7 +39,7 @@ const commonSchema = {
     name: yup.string(),
     type: yup.string(),
     size: yup.number(),
-  }),
+  }).optional().nullable(),
 };
 
 const newAudioSchema = yup.object().shape({
@@ -97,7 +97,7 @@ const AudioForm: FC<Props> = ({
       formData.append('about', finalData.about);
       formData.append('category', finalData.category);
 
-      if (finalData.poster.uri)
+      if (finalData.poster && finalData.poster.uri)
         formData.append('poster', {
           name: finalData.poster.name,
           type: finalData.poster.type,
@@ -107,6 +107,7 @@ const AudioForm: FC<Props> = ({
       onSubmit(formData);
     } catch (error) {
       const errorMessage = catchAsyncError(error);
+      console.log(error)
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     }
   };
@@ -259,7 +260,8 @@ const styles = StyleSheet.create({
 });
 
 export default AudioForm;
+
 function upldateNotification(arg0: { message: string; type: string; }): any {
-    throw new Error("Function not implemented.");
+  throw new Error("Function not implemented.");
 }
 
