@@ -11,6 +11,7 @@ const client = axios.create({
 console.log(`${Config.BASE_URL}}`)
 
 
+
 type heders = CreateAxiosDefaults<any>['headers']
 
 export const getClient = async (headers?: heders)=>{
