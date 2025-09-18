@@ -75,7 +75,7 @@ const SignIn: FC<Props> = props => {
       dispatch(updateProfile(res.data.profile));
       dispatch(updateLoggedInState(true))
     } catch (e: unknown) {
-      // setError(e)
+      setError(e.response.data.error)
       console.log(e)
     }
     actions.setSubmitting(false)

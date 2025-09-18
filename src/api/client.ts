@@ -3,12 +3,13 @@ import { getFromAsyncStorage, keys } from "../utils/asyncStorage";
 import Config from "react-native-config";
 
 
-const  baseURL = 'https://learnify-server-ztwa.onrender.com/'
+const  baseURL = `${Config.BASE_URL}`
 const client = axios.create({
     baseURL : baseURL
 })
 
-console.log(Config.BASE_URL)
+console.log(`${Config.BASE_URL}}`)
+
 
 type heders = CreateAxiosDefaults<any>['headers']
 

@@ -62,6 +62,7 @@ const ProfileSettings: FC<Props> = props => {
       dispatch(updateLoggedInState(false))
     }
     dispatch(updateBusyState(false));
+    dispatch(updateLoggedInState(false));
   };
 
   // when user submit with updated data for userInfo
