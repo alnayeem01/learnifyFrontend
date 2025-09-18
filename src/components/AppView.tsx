@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react'
 import { View, StyleSheet } from 'react-native'
 import MiniAudioPlayer from './MiniAudioPlayer';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 import PlaylistAudioModal from './ui/PlaylistAudioModal';
 
 

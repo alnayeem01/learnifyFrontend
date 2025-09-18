@@ -17,7 +17,7 @@ import ImagePicker from "react-native-image-crop-picker";
 import ReVerification from '../ReVerification';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useNavigation } from '@react-navigation/native';
-import { useFetchHistory } from '../../../hooks/query';
+import { useFetchHistory } from '../../hooks/query';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface Props { }

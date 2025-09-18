@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
-import { useFetchRecommendedAudios } from '../../hooks/query';
+import { useFetchRecommendedAudios } from '../hooks/query';
 import colors from '../utils/colors';
 import GridView from './ui/GridView';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';

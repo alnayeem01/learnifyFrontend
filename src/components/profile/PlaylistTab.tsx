@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { View, StyleSheet, Text, ScrollView } from 'react-native'
-import { useFetchPlaylist } from '../../../hooks/query';
+import { useFetchPlaylist } from '../../hooks/query';
 import PlayListItem from '../ui/PlayListItem';
 import { PlayList } from '../../@types/audio';
 import AppView from '../AppView';

@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { View, StyleSheet, Text, ScrollView, Image, Pressable } from 'react-native'
-import { useFetchLatestAudios } from '../../hooks/query';
+import { useFetchLatestAudios } from '../hooks/query';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
 import colors from '../utils/colors';
 import AudioCard from './ui/AudioCard';

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react'
 import { StyleSheet, Text, ScrollView, Pressable, View, Button } from 'react-native'
-import { useFetchPlaylist } from '../../hooks/query';
+import { useFetchPlaylist } from '../hooks/query';
 import LatestUploads from '../components/LatestUploads';
 import RecommendedAudios from '../components/RecommendedAudios';
 import OptionsModal from '../components/OptionsModal';
@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { updateNotification } from '../store/notificaton';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistForm, { PlayListInfo } from '../components/PlaylistForm';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 import AppView from '../components/AppView';
 import RecentlyPlayed from '../components/RecentlyPlayed';
 import RecommendedPlaylist from '../components/RecommendedPlaylist';

@@ -3,14 +3,13 @@ import { FC, useState } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import { ProfileNavigatorStackParamList } from '../../@types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import colors from '../../utils/colors';
 import AudioForm from '../form/AudioForm';
 import { getClient } from '../../api/client';
 import { AudioData } from '../../@types/audio';
 import { mapRange } from '../../utils/math';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
-import catchAsyncError from '../../api/catchError';
+
 
 type Props = NativeStackScreenProps<ProfileNavigatorStackParamList, 'UpdateAudio'>
 

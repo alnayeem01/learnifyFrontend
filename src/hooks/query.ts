@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import catchAsyncError from "../src/api/catchError";
-import { updateNotification } from "../src/store/notificaton";
+import catchAsyncError from "../api/catchError";
+import { updateNotification } from "../store/notificaton";
 import { useQuery } from "@tanstack/react-query";
-import {getClient} from "../src/api/client";
-import { AudioData, CompletePlaylist, History, PlayList, } from "../src/@types/audio";
+import {getClient} from "../api/client";
+import { AudioData, CompletePlaylist, History, PlayList, } from "../@types/audio";
 
 
 

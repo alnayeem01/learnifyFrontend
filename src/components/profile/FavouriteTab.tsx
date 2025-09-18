@@ -1,12 +1,12 @@
 import { FC } from 'react'
 import { View, StyleSheet, Text, ScrollView } from 'react-native'
-import { useFetchFavourites } from '../../../hooks/query';
+import { useFetchFavourites } from '../../hooks/query';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
 import EmptyRecords from '../ui/EmptyRecords';
 import AudioListItem from '../ui/AudioListItem';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
-import useAudioController from '../../../hooks/useAudioController';
+import useAudioController from '../../hooks/useAudioController';
 import AppView from '../AppView';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

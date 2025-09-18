@@ -4,7 +4,7 @@ import colors from '../../utils/colors';
 import { AudioData } from '../../@types/audio';
 import PlayAnimation from '../../ui/PlayAnimation';
 import { isPlaying } from 'react-native-track-player';
-import useAudioController from '../../../hooks/useAudioController';
+import useAudioController from '../../hooks/useAudioController';
 
 
 interface Props {

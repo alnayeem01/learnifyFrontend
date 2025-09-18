@@ -9,7 +9,7 @@ import AppLink from './AppLink';
 import { useProgress } from 'react-native-track-player';
 import formatDuration from 'format-duration';
 import Slider from '@react-native-community/slider';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PlayPauseBtn from './PlayPauseBtn';

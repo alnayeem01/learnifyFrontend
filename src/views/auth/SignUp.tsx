@@ -20,6 +20,7 @@ import client from '../../api/client';
 import catchAsyncError from '../../api/catchError';
 import { useDispatch } from 'react-redux';
 import { updateNotification } from '../../store/notificaton';
+import Config from 'react-native-config';
 
 interface Props { }
 
@@ -81,10 +82,12 @@ const SignUp: FC<Props> = props => {
         ...values
       });
 
+
       navigation.navigate("Verification", {
         userInfo: data.User,
       })
     } catch (error) {
+      console.log(error)
         const errorMessage = catchAsyncError(error)
         dispatch(updateNotification({message: errorMessage, type:'error'} ))
     }

@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react'
 import { StyleSheet, ScrollView, Text, Pressable } from 'react-native'
-import { useFetchUploadsByProfile } from '../../../hooks/query';
+import { useFetchUploadsByProfile } from '../../hooks/query';
 import AudioListItem from '../ui/AudioListItem';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
 import EmptyRecords from '../ui/EmptyRecords';
-import useAudioController from '../../../hooks/useAudioController';
+import useAudioController from '../../hooks/useAudioController';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
 import AppView from '../AppView';

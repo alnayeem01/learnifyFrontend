@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { View, StyleSheet, Text, Pressable, Image, FlatList } from 'react-native'
-import { useFetchRecommendedPlaylist } from '../../hooks/query';
+import { useFetchRecommendedPlaylist } from '../hooks/query';
 import colors from '../utils/colors';
 import { PlayList } from '../@types/audio';
 
