@@ -1,8 +1,8 @@
 
 import TrackPlayer, { AppKilledPlaybackBehavior, Capability, State, Track, usePlaybackState, useProgress } from "react-native-track-player"
-import { AudioData } from "../src/@types/audio"
+import { AudioData } from "../@types/audio"
 import { useDispatch, useSelector } from "react-redux";
-import { getPlayerState, updateOnGoingAudio, updateOnGoingList } from "../src/store/player";
+import { getPlayerState, updateOnGoingAudio, updateOnGoingList } from "../store/player";
 import deepEqual from "deep-equal";
 import { useEffect } from "react";
 
@@ -16,7 +16,7 @@ const updateQueue = async (data: AudioData[]) => {
         return {
             id: item.id,
             url: item.file,
-            artwork: item?.poster?.url || localImage,
+            artwork: item?.poster || localImage,
             artist: item.owner.name,
             title: item.title,
             genre: item.category,

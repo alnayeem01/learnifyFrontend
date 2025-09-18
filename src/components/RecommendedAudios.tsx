@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
-import { useFetchRecommendedAudios } from '../../hooks/query';
+import { useFetchRecommendedAudios } from '../hooks/query';
 import colors from '../utils/colors';
 import GridView from './ui/GridView';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
@@ -39,6 +39,9 @@ const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
             </PulseAnimationContainer>
         )
 
+    if (!data?.length) {
+        return null
+    }
 
     return <View style={styles.container}>
         <Text style={styles.title}>Recommended</Text>
@@ -57,6 +60,7 @@ const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
                 )
             }} />
     </View>
+
 };
 
 const styles = StyleSheet.create({

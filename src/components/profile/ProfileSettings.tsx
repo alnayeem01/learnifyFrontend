@@ -17,7 +17,7 @@ import ImagePicker from "react-native-image-crop-picker";
 import ReVerification from '../ReVerification';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useNavigation } from '@react-navigation/native';
-import { useFetchHistory } from '../../../hooks/query';
+import { useFetchHistory } from '../../hooks/query';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface Props { }
@@ -62,6 +62,7 @@ const ProfileSettings: FC<Props> = props => {
       dispatch(updateLoggedInState(false))
     }
     dispatch(updateBusyState(false));
+    dispatch(updateLoggedInState(false));
   };
 
   // when user submit with updated data for userInfo

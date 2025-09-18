@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native'
 import AppView from '../components/AppView';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeNavigatorStackParamList, PublicProfileTabParamList } from '../@types/navigation';
-import { useFetchPulicProfile } from '../../hooks/query';
+import { useFetchPulicProfile } from '../hooks/query';
 import PublicProfileContainer from '../components/profile/PublicProfileContainer';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import colors from '../utils/colors';

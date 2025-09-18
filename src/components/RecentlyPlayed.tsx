@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
-import { useFetchRecentlyPlayed } from '../../hooks/query';
+import { useFetchRecentlyPlayed } from '../hooks/query';
 import colors from '../utils/colors';
 import RecentlyPlayedCard from './RecentlyPlayedCard';
 import PulseAnimationContainer from '../ui/PulseAnimationContainer';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../store/player';
 

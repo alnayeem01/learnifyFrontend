@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
 import AppView from '../AppView';
-import { useFetchPublicPlaylist } from '../../../hooks/query';
+import { useFetchPublicPlaylist } from '../../hooks/query';
 import PlayListItem from '../ui/PlayListItem';
 import { PlayList } from '../../@types/audio';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';

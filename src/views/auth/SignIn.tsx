@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
+  Text,
 } from 'react-native';
 import colors from '../../utils/colors';
 import AuthInputField from '../../components/form/AuthInputField';
@@ -17,9 +18,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AuthStackParamList } from '../../@types/navigation';
 import { FormikHelpers } from 'formik';
 import client from '../../api/client';
-import { getAuthState, updateLoggedInState, updateProfile } from '../../store/auth';
-import { useDispatch, useSelector } from 'react-redux';
+import {  updateLoggedInState, updateProfile } from '../../store/auth';
+import { useDispatch  } from 'react-redux';
 import { keys, saveToAsyncStorage } from '../../utils/asyncStorage';
+import Config from 'react-native-config';
 
 interface Props { }
 
@@ -54,6 +56,7 @@ const SignIn: FC<Props> = props => {
   const navigatation = useNavigation<NavigationProp<AuthStackParamList>>()
 
   const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true);
+  const [error, setError] =useState('')
   const dispatch = useDispatch()
 
   const togglePassword = () => {
@@ -71,7 +74,9 @@ const SignIn: FC<Props> = props => {
       // It dispatches the `updateProfile` action with the user object from the API response
       dispatch(updateProfile(res.data.profile));
       dispatch(updateLoggedInState(true))
-    } catch (e) {
+    } catch (e: unknown) {
+      setError(e.response.data.error)
+      console.log(e)
     }
     actions.setSubmitting(false)
   }
@@ -83,6 +88,9 @@ const SignIn: FC<Props> = props => {
       validationSchema={signInValidation}>
       <AuthFormContainer title={'Welcome Back!'} subTitle={`Let's get started by creating your account!`} >
         <View style={styles.formContainer}>
+          <View style={styles.errorContainer}>
+            <Text style={{color: 'white'}}>{error}</Text>
+          </View>
           <AuthInputField
             name="email"
             label="Email"
@@ -159,6 +167,11 @@ const styles = StyleSheet.create({
   headinTextTitle: {
     fontSize: 14,
     color: colors.CONTRAST,
+  },
+
+  errorContainer:{
+    padding: 5,
+    alignItems : 'center'
   }
 });
 

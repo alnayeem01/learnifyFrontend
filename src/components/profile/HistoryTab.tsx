@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react'
 import { View, StyleSheet, Text, ScrollView, Pressable, RefreshControl } from 'react-native'
-import { useFetchHistory } from '../../../hooks/query';
+import { useFetchHistory } from '../../hooks/query';
 import EmptyRecords from '../ui/EmptyRecords';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
 import colors from '../../utils/colors';

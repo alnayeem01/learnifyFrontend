@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Pressable } from 'react-native'
 import AvatarField from '../ui/AvatarField';
 import colors from '../../utils/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useFetchIsFollowing } from '../../../hooks/query';
+import { useFetchIsFollowing } from '../../hooks/query';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
 import { getAuthState } from '../../store/auth';

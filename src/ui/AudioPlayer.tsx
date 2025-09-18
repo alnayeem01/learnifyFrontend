@@ -9,7 +9,7 @@ import AppLink from './AppLink';
 import { useProgress } from 'react-native-track-player';
 import formatDuration from 'format-duration';
 import Slider from '@react-native-community/slider';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PlayPauseBtn from './PlayPauseBtn';
@@ -38,7 +38,7 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress, on
     const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
     const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress, seekTO, setPlaybackRate } = useAudioController()
     //dynamic image source 
-    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
+    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster } : require('../assets/images/music.jpg')
     //audio progress from react-native-track-player
     const { duration, position } = useProgress();
     const dispatch = useDispatch();

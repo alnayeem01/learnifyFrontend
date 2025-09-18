@@ -1,13 +1,13 @@
 import { FC } from 'react'
 import { StyleSheet, ScrollView } from 'react-native'
 import AppView from '../AppView';
-import { useFetchPublicUploads } from '../../../hooks/query';
+import { useFetchPublicUploads } from '../../hooks/query';
 import AudioListLoadingUi from '../ui/AudioListLoadingUi';
 import EmptyRecords from '../ui/EmptyRecords';
 import AudioListItem from '../ui/AudioListItem';
 import { useSelector } from 'react-redux';
 import { getPlayerState } from '../../store/player';
-import useAudioController from '../../../hooks/useAudioController';
+import useAudioController from '../../hooks/useAudioController';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { PublicProfileTabParamList } from '../../@types/navigation';
 

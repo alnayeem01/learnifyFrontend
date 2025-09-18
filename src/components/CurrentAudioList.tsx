@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import AudioListModal from '../ui/AudioListModal';
 import { getPlayerState } from '../store/player';
 import { useSelector } from 'react-redux';
-import useAudioController from '../../hooks/useAudioController';
+import useAudioController from '../hooks/useAudioController';
 
 
 interface Props {
