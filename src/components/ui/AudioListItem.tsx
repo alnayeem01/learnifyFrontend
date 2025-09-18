@@ -17,7 +17,7 @@ const AudioListItem: FC<Props> = ({audio, onPress,isPlaying,onLongPress }) => {
 
     //helper function to dynamically chose iamge if no image passed then we pick our loacl image 
     const getsource = (poster?: string) => {
-        return poster ? { uri: poster } : require('../../../assets/images/music.jpg')
+        return poster ? { uri: poster } : require('../../assets/images/music.jpg')
     };
 
     return (

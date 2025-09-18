@@ -38,7 +38,7 @@ const AudioPlayer: FC<Props> = ({ visible, onRequestClose, onListOptionPress, on
     const { onGoingAudio, playBackRate } = useSelector(getPlayerState)
     const { skipTo, onPreviousPress, togglePlayPause, isPlaying, isBusy, onNextPress, seekTO, setPlaybackRate } = useAudioController()
     //dynamic image source 
-    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster.url } : require('../../assets/images/music.jpg')
+    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster } : require('../assets/images/music.jpg')
     //audio progress from react-native-track-player
     const { duration, position } = useProgress();
     const dispatch = useDispatch();

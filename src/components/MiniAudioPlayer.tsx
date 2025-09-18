@@ -37,7 +37,7 @@ const MiniAudioPlayer: FC<Props> = props => {
 
     // useProgress hook from react-native-track-player 
     const progress = useProgress()
-    const source = onGoingAudio?.poster?.url ? { uri: onGoingAudio.poster?.url } : require('../../assets/images/music.jpg')
+    const source = onGoingAudio?.poster ? { uri: onGoingAudio.poster } : require('../assets/images/music.jpg')
 
     const queryClient = useQueryClient();
 

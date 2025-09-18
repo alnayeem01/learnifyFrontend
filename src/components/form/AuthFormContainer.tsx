@@ -13,7 +13,7 @@ const AuthFormContainer: FC<Props> = ({ title, subTitle, children }) => {
     return (
         <View style={styles.authFormContainer}>
             <CircleUI size={200} position={'top-left'} /><CircleUI size={100} position={'top-right'} /><CircleUI size={100} position={'bottom-left'} /><CircleUI size={200 / 2} position={'bottom-right'} /><View style={styles.headingContainer}>
-                <Image source={require('../../../assets/images/mic.png')} />
+                <Image source={require('../../assets/images/mic.png')} />
                 <Text style={styles.headinText}>{title}</Text>
                 <Text style={styles.headinTextTitle}>{subTitle}</Text>
             </View>

@@ -9,7 +9,7 @@ import client from '../api/client';
 import Loader from '../ui/Loader';
 import { StyleSheet, View } from 'react-native';
 import colors from '../utils/colors';
-
+import BootSplash from "react-native-bootsplash";
 
 interface Props {
 }
@@ -54,7 +54,10 @@ const AppNavigator: FC<Props> = props => {
 
 
     return (
-        <NavigationContainer theme={AppTheme}>
+        <NavigationContainer 
+            theme={AppTheme}
+            onReady={()=>BootSplash.hide()}
+            >
             {busy ? <View style={{
                 ...StyleSheet.absoluteFillObject,
                 backgroundColor: colors.OVERLAY, justifyContent: "center", alignItems: "center", zIndex: 1

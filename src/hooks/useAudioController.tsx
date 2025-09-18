@@ -10,7 +10,7 @@ let ready=false;
 
 const updateQueue = async (data: AudioData[]) => {
     //passing the Track object required by react native Track Player 
-    const localImage = require('../../assets/images/mic.png')
+    const localImage = require('../assets/images/mic.png')
     //there is an error when pasing local 
     const lists: Track[] = data.map(item => {
         return {

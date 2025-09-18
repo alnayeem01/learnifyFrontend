@@ -39,6 +39,9 @@ const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
             </PulseAnimationContainer>
         )
 
+    if (!data?.length) {
+        return null
+    }
 
     return <View style={styles.container}>
         <Text style={styles.title}>Recommended</Text>
@@ -57,6 +60,7 @@ const RecommendedAudios: FC<Props> = ({ onAudioPress, onAudioLongPress }) => {
                 )
             }} />
     </View>
+
 };
 
 const styles = StyleSheet.create({

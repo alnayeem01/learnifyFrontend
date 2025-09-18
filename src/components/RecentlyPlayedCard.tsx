@@ -13,7 +13,7 @@ interface Props {
     isPlaying:boolean
 }
 const RecentlyPlayedCard: FC<Props> = ({ onPress, poster, title, isPlaying }) => {
-    const source = poster ? { uri: poster } : require('../../assets/images/music.jpg')
+    const source = poster ? { uri: poster } : require('../assets/images/music.jpg')
     return (
         <Pressable onPress={onPress} style={styles.container}>
             <View>

@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Pressable, Image, FlatList } from 'react-native
 import { useFetchRecommendedPlaylist } from '../hooks/query';
 import colors from '../utils/colors';
 import { PlayList } from '../@types/audio';
+import EmptyRecords from './ui/EmptyRecords';
 
 
 
@@ -11,6 +12,9 @@ interface Props {
 }
 const RecommendedPlaylist: FC<Props> = ({onListPress}) => {
   const { data } = useFetchRecommendedPlaylist();
+  if(!data?.length){
+    return null
+  }
   return <View style={styles.container}>
     <Text style={styles.title}>Playlist For You</Text>
     <FlatList
@@ -22,7 +26,7 @@ const RecommendedPlaylist: FC<Props> = ({onListPress}) => {
         return (
           <Pressable onPress={()=> onListPress(item)} style={styles.cardContainer} key={item.id}>
             <Image
-              source={require('../../assets/images/music.jpg')}
+              source={require('../assets/images/music.jpg')}
               style={styles.image}
             />
             <View style={styles.overlay}>
